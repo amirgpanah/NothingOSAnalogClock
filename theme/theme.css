@@ -1,0 +1,28 @@
+/* ==============================================================================
+   THEME ENTRY POINT
+
+   This is the only theme file a component stylesheet should ever @import.
+   It loads, in order:
+
+     1. Tier 0 - primitives   (raw values, no meaning, theme-independent)
+     2. Tier 1 - semantic     (named roles, aliasing Tier 0, theme-dependent
+                                for color / theme-independent for typography)
+
+   Component CSS (grid, ticks, hands, hub, sidebar, snackbar, ...) must only
+   ever consume Tier-1 names (--sds-color-*, --sds-typography-*-*). It should
+   never reference a Tier-0 primitive (--sds-color-gray-900, --sds-typography-
+   scale-03, ...) directly, and never branch on the theme itself -- switching
+   [data-theme] on <html> is the only thing that should ever change how a
+   component looks.
+
+   Load order matters for readability, not function: CSS custom properties
+   resolve at used-value time, not declaration order, so this would still work
+   if the imports were reversed. Keeping primitives first just mirrors the
+   Tier 0 -> Tier 1 dependency direction for anyone reading the source.
+   ============================================================================== */
+
+@import url("./tokens/color.primitives.css");
+@import url("./tokens/typography.primitives.css");
+@import url("./tokens/color.semantic.css");
+@import url("./tokens/typography.semantic.css");
+@import url("./tokens/shadow.semantic.css");

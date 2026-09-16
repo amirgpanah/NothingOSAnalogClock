@@ -1,0 +1,46 @@
+/* ==========================================================================
+   SEMANTIC SHADOW TOKENS (Tier 1)
+   Generated from the Simple Design System community Figma file
+   (key uuMoei6TTH6Rl6u2h8pN3p), Foundations page spec block
+   (nodes 171:24264-171:24290), read via the REST file-content API.
+
+   The system defines exactly six drop-shadow strengths, 100 -> 600. All
+   layers are #0C0C0D at fixed alphas, so colors alias existing Tier-0
+   primitives -- never raw hex:
+     rgba(12,12,13,.05) -> --sds-color-black-100 (#0C0C0D0D)
+     rgba(12,12,13,.10) -> --sds-color-black-200 (#0C0C0D1A)
+     rgba(12,12,13,.40) -> --sds-color-black-400 (#0C0C0D66)
+
+   Offsets/blurs/spreads stay inline: no Tier-0 dimension primitives exist,
+   and inventing a spacing scale for six values isn't worth it. Not
+   theme-dependent, hence a single :root block like typography.
+
+   Component usage inside the library concentrates on 200/300/400; 500 and
+   600 are the documented top of the scale. The Foundations page also specs
+   matching INNER_SHADOW recipes (nodes 227:20228+) -- add an *-inner tier
+   here only when something actually consumes it.
+   ========================================================================== */
+:root {
+  /* Single subtle layer. */
+  --sds-shadow-100:
+    0 1px 4px var(--sds-color-black-100);
+  /* Baseline surface: the 5% layer doubled at 10%. */
+  --sds-shadow-200:
+    0 1px 4px var(--sds-color-black-100),
+    0 1px 4px var(--sds-color-black-200);
+  /* Raised: pulled down to 4px with a -1px spread. */
+  --sds-shadow-300:
+    0 4px 4px -1px var(--sds-color-black-100),
+    0 4px 4px -1px var(--sds-color-black-200);
+  /* Floating: tight anchor under a wide soft veil. */
+  --sds-shadow-400:
+    0 4px 4px -4px var(--sds-color-black-100),
+    0 16px 32px -4px var(--sds-color-black-200);
+  /* Higher float: veil tightens to 16px blur / -8px spread. */
+  --sds-shadow-500:
+    0 4px 4px -4px var(--sds-color-black-100),
+    0 16px 16px -8px var(--sds-color-black-200);
+  /* Heavy/modal: one strong layer does the whole job. */
+  --sds-shadow-600:
+    0 16px 32px -8px var(--sds-color-black-400);
+}

@@ -1,0 +1,269 @@
+/* ==============================================================================
+   APP / CLOCK ENGINE STYLES
+
+   The core canvas: grid background, marquee selection, the clock itself
+   (ticks, hands, hub, resize handles), and the snackbar. This is everything
+   that used to be an inline <style> block in index.html, moved here so all
+   CSS lives in actual files instead of being split between two places.
+
+   Color variables (--tick-hour, --hand-major, --hand-second, --hub,
+   --grid-line, --handle, --marquee-line, --marquee-fill, defined below under
+   html[data-theme="dark"/"light"]) are their own small, dedicated palette --
+   deliberately NOT routed through the --sds-color-* design tokens in
+   theme/tokens/. Those tokens describe UI-chrome roles (Text/Default/Default,
+   Icon/Danger/On Danger, etc.); a clock's tick or hand color is closer to an
+   illustration/data-viz choice, arrived at by visual iteration, not a UI
+   semantic. To change one of these colors, edit the matching line directly
+   below -- every place that color is used already references the variable,
+   never a raw hex.
+   ============================================================================== */
+
+      :root {
+        --cell-size: 44px;
+        --transition-fast: 120ms ease;
+        /* Page background now comes from the token layer, not a hand-picked
+       hex. This is theme-independent because color.semantic.css already
+       switches --sds-color-background-default-default itself based on
+       [data-theme] -- this file never needs to branch on theme again. */
+        --bg: var(--sds-color-background-default-default);
+      }
+
+      html[data-theme="dark"] {
+        /* ponytail: revert-point -- was #ffffff0d (clock palette exemption). */
+        --grid-line: var(--sds-color-white-200);
+        --tick-hour: #f2f2f0;
+        --tick-minute: #61656c;
+        --hand-major: #f2f2f0;
+        --hand-second: #e5484d;
+        --hub: #e5484d;
+        --handle: rgba(229, 72, 77, 0.85);
+        --marquee-line: rgba(233, 233, 231, 0.55);
+        --marquee-fill: rgba(233, 233, 231, 0.05);
+        /* Floating chrome reads stronger on dark surfaces, softer on light. */
+        --floating-shadow: var(--sds-shadow-200);
+      }
+
+      html[data-theme="light"] {
+        /* ponytail: revert-point -- was rgba(20, 20, 18, 0.08). */
+        --grid-line: var(--sds-color-black-200);
+        --tick-hour: #191a17;
+        --tick-minute: #a4a29a;
+        --hand-major: #191a17;
+        --hand-second: #c8373d;
+        --hub: #c8373d;
+        --handle: rgba(200, 55, 61, 0.85);
+        --marquee-line: rgba(25, 26, 23, 0.5);
+        --marquee-fill: rgba(25, 26, 23, 0.05);
+        --floating-shadow: var(--sds-shadow-100);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        font-family:
+          var(--sds-typography-body-font-family),
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+      }
+
+      body {
+        background: var(--bg);
+        transition: background var(--transition-fast);
+      }
+
+      /* Veil over the base background: #000000 -> the theme's own page color,
+         with the WHOLE layer held at 20% opacity. A single background layer
+         can't carry its own opacity, so this lives on body::before instead of
+         baking alpha into the stops (which would freeze the token's resolved
+         value and misbehave across theme switches). Painted before every
+         positioned child, so canvas/grid/sidebar/snackbar stay above it. */
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background-image: linear-gradient(
+          to bottom,
+          var(--sds-color-black-1000),
+          var(--sds-color-background-default-secondary)
+        );
+        opacity: 0.2;
+      }
+
+      #canvas {
+        position: fixed;
+        inset: 0;
+        /* Dot size: change --grid-dot-size below (it's the circle's
+           diameter, in px). The bare gradient centers each dot in the middle
+           of its tile -- computeGrid() then shifts background-position back
+           by half a cell, so every dot center lands exactly on a grid line,
+           the same place snap() parks clock edges. Don't try anchoring the
+           circle at the tile corner instead ("at 0 0"): each tile would draw
+           only one quarter of each dot and the neighbors never redraw the
+           missing ones, leaving sparse slivers. */
+        --grid-dot-size: 3px;
+        background-image: radial-gradient(
+          circle,
+          var(--grid-line) calc(var(--grid-dot-size) / 2),
+          transparent calc(var(--grid-dot-size) / 2)
+        );
+        background-size: var(--cell-size) var(--cell-size);
+        cursor: crosshair;
+        touch-action: none;
+      }
+
+      #canvas.grid-hidden {
+        background-image: none;
+      }
+
+      #canvas.no-second-hand .hand.second,
+      #canvas.no-second-hand .hand.second-head {
+        display: none;
+      }
+
+      .marquee {
+        position: absolute;
+        border: 1.5px dashed var(--marquee-line);
+        background: var(--marquee-fill);
+        pointer-events: none;
+        border-radius: 4px;
+      }
+
+      .clock {
+        position: absolute;
+        touch-action: none;
+        cursor: move;
+      }
+
+      .clock svg {
+        display: block;
+        overflow: visible;
+      }
+
+      .clock .hand:not(.second-head) {
+        stroke-linecap: round;
+      }
+
+      .handle {
+        position: absolute;
+        /* Hit target is bigger than the visible dot on purpose (touch/tap
+           ease) -- the dot itself is drawn at the original 12px via ::after
+           below, centered in this larger invisible box. */
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transform: translate(-50%, -50%);
+        touch-action: none;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 180ms ease-in-out;
+      }
+
+      .handle::after {
+        content: "";
+        box-sizing: border-box;
+        width: 12px;
+        height: 12px;
+        background: var(--handle);
+        border: 2px solid var(--bg);
+        border-radius: 50%;
+      }
+
+      .clock:hover .handle,
+      .clock.show-handles .handle {
+        opacity: 0.9;
+        pointer-events: auto;
+      }
+
+      .handle-nw {
+        cursor: nwse-resize;
+      }
+
+      .handle-ne {
+        cursor: nesw-resize;
+      }
+
+      .handle-sw {
+        cursor: nesw-resize;
+      }
+
+      .handle-se {
+        cursor: nwse-resize;
+      }
+
+      .handle-n,
+      .handle-s {
+        cursor: ns-resize;
+      }
+
+      .handle-e,
+      .handle-w {
+        cursor: ew-resize;
+      }
+
+      /* #toolbar and .btn removed: the sidebar (styles/sidebar.css) now owns
+     the theme toggle and the clear action, so this floating duplicate
+     toolbar no longer exists. */
+
+      #snackbar {
+        position: fixed;
+        /* Centered over the CANVAS, not the viewport: the free strip runs
+           from the page padding on the left to the floating sidebar (which
+           itself docks --page-margin from the right edge). Reusing the
+           sidebar's own vars means the tablet column count and mobile
+           margins flow through without extra rules. */
+        left: calc(
+          var(--page-margin) +
+            (100vw - var(--page-margin) * 2 - var(--sidebar-width)) / 2
+        );
+        bottom: 32px;
+        transform: translate(-50%, 12px);
+        padding: 12px 24px;
+        border-radius: 100vmax; /* pill-shaped */
+        font-family: var(--sds-typography-body-font-family);
+        font-size: var(--sds-typography-body-size-medium);
+        font-weight: var(--sds-typography-body-font-weight-regular);
+        color: var(--sds-color-text-default-default);
+        /* Not one of the 13 named tokens -- no instruction covered the snackbar,
+       so this is a default pick (matches the sidebar's own surface color).
+       To change: edit these two custom properties only. */
+        background: var(--sds-color-background-default-secondary);
+        border: 1px solid var(--sds-color-background-default-tertiary);
+        box-shadow: var(--floating-shadow);
+        opacity: 0;
+        pointer-events: none;
+        z-index: 30;
+        transition:
+          opacity 220ms cubic-bezier(0.4, 0, 0.2, 1),
+          transform 220ms cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      #snackbar.visible {
+        opacity: 1;
+        transform: translate(-50%, 0);
+      }
+
+      @media (max-width: 640px) {
+        /* Mobile docks the sidebar as an (almost) edge-to-edge bottom sheet,
+           leaving no side strip to dodge -- plain centering wins again. */
+        #snackbar {
+          left: 50%;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .clock .hand {
+          transition: none;
+        }
+      }

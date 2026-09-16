@@ -1,0 +1,40 @@
+/* ==========================================================================
+   TYPOGRAPHY PRIMITIVES (Tier 0)
+   Raw font families, the type scale, and font weights. No meaning assigned.
+   NEVER reference these directly from component CSS -- only semantic
+   typography tokens (typography.semantic.css) may.
+   Generated from: Default_tokens.json
+   ========================================================================== */
+:root {
+  --sds-typography-family-sans: Inter;  /* Family Sans */
+  --sds-typography-family-serif: Noto Serif;  /* Family Serif */
+  --sds-typography-family-mono: Roboto Mono;  /* Family Mono */
+  --sds-typography-scale-01: 12px;  /* Scale 01 */
+  --sds-typography-scale-02: 14px;  /* Scale 02 */
+  --sds-typography-scale-03: 16px;  /* Scale 03 */
+  --sds-typography-scale-04: 20px;  /* Scale 04 */
+  --sds-typography-scale-05: 24px;  /* Scale 05 */
+  --sds-typography-scale-06: 32px;  /* Scale 06 */
+  --sds-typography-scale-07: 40px;  /* Scale 07 */
+  --sds-typography-scale-08: 48px;  /* Scale 08 */
+  --sds-typography-scale-09: 64px;  /* Scale 09 */
+  --sds-typography-scale-10: 72px;  /* Scale 10 */
+  --sds-typography-weight-thin: 100;  /* Weight Thin */
+  --sds-typography-weight-thin-italic: Thin Italic;  /* Weight Thin Italic */
+  --sds-typography-weight-extra-light: 200;  /* Weight Extra Light */
+  --sds-typography-weight-extralight-italic: Extra Light Italic;  /* Weight Extralight Italic */
+  --sds-typography-weight-light: 300;  /* Weight Light */
+  --sds-typography-weight-light-italic: Light Italic;  /* Weight Light Italic */
+  --sds-typography-weight-regular: 400;  /* Weight Regular */
+  --sds-typography-weight-regular-italic: Italic;  /* Weight Regular Italic */
+  --sds-typography-weight-medium: 500;  /* Weight Medium */
+  --sds-typography-weight-medium-italic: Medium Italic;  /* Weight Medium Italic */
+  --sds-typography-weight-semibold: 600;  /* Weight Semibold */
+  --sds-typography-weight-semibold-italic: Semi Bold Italic;  /* Weight Semibold Italic */
+  --sds-typography-weight-bold: 700;  /* Weight Bold */
+  --sds-typography-weight-bold-italic: Bold Italic;  /* Weight Bold Italic */
+  --sds-typography-weight-extra-bold: 800;  /* Weight Extra Bold */
+  --sds-typography-weight-extra-bold-italic: Extra Bold Italic;  /* Weight Extra Bold Italic */
+  --sds-typography-weight-black: 900;  /* Weight Black */
+  --sds-typography-weight-black-italic: Black Italic;  /* Weight Black Italic */
+}

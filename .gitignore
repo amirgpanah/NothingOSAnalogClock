@@ -1,0 +1,15 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# VS Code (personal editor config, not shared)
+.vscode/
+
+# Node / tooling leftovers (no build step, but keep the repo clean)
+node_modules/
+dist/
+.DSH/
+*.log

@@ -1,0 +1,1867 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Marquee Clock</title>
+    <!-- Inter font (full package with variable font) --
+       https://fonts.google.com/specimen/Inter (served via rsms.me) -->
+    <link rel="preconnect" href="https://rsms.me/">
+    <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+    <!--
+  Icons in this file are plain placeholder inline SVGs (see the "PLACEHOLDER
+  ICON" comments throughout), standing in for Phosphor icons. To switch to
+  the real Phosphor set later:
+    1. Add the web font/script once, e.g. in <head>:
+         <script src="https://unpkg.com/@phosphor-icons/web"></script>
+       (or `npm install @phosphor-icons/web` and import it in a bundler setup)
+    2. Replace each placeholder <svg>...</svg> block with the matching tag,
+       e.g. <i class="ph ph-sun"></i>, <i class="ph ph-moon"></i>,
+       <i class="ph ph-eye"></i>, <i class="ph ph-trash"></i>,
+       <i class="ph ph-caret-down"></i>, <i class="ph ph-caret-up"></i>.
+    3. Icon color/size is already driven by CSS (color + font-size /
+       width+height), so no other markup changes should be needed.
+-->
+    <link rel="stylesheet" href="theme/theme.css" />
+    <link rel="stylesheet" href="styles/app.css" />
+    <link rel="stylesheet" href="styles/components.css" />
+    <link rel="stylesheet" href="styles/sidebar.css" />
+    <link rel="stylesheet" href="styles/clock-context-menu.css" />
+    <!-- Phosphor Icons -- https://github.com/phosphor-icons/homepage -->
+    <script src="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2"></script>
+  </head>
+
+  <body>
+    <div id="canvas"></div>
+    <aside id="sidebar" data-state="expanded">
+      <section id="sidebar-header">
+        <div id="sidebar-handle" aria-hidden="true"></div>
+        <div class="sidebar-header-row">
+          <button type="button" class="collapse-btn" id="collapseBtn" title="Collapse or expand" aria-label="Collapse or expand settings panel">
+            <i class="ph-light ph-caret-down"></i>
+          </button>
+          <h1 id="sidebar-title">Settings</h1>
+          <div id="theme-switch" role="group" aria-label="Theme">
+            <div class="switch-indicator" aria-hidden="true"></div>
+            <button
+              type="button"
+              class="icon-btn"
+              id="themeLightBtn"
+              aria-pressed="false"
+              title="Light theme"
+            >
+              <span class="icon-stack">
+                <i class="ph-thin ph-sun icon-thin"></i>
+                <i class="ph-fill ph-sun icon-fill"></i>
+              </span>
+            </button>
+            <button
+              type="button"
+              class="icon-btn"
+              id="themeDarkBtn"
+              aria-pressed="true"
+              title="Dark theme"
+            >
+              <span class="icon-stack">
+                <i class="ph-thin ph-moon icon-thin"></i>
+                <i class="ph-fill ph-moon icon-fill"></i>
+              </span>
+            </button>
+          </div>
+        </div>
+      </section>
+      <div id="sidebar-body">
+        <section class="section">
+          <h2 class="section-label">General</h2>
+          <div class="section-content">
+            <div class="setting-row">
+              <span class="setting-label">Show Grid</span>
+              <button
+                type="button"
+                class="toggle"
+                id="toggle-grid"
+                role="switch"
+                aria-checked="true"
+              >
+                <span class="toggle-knob"></span>
+              </button>
+            </div>
+            <div class="setting-row">
+              <span class="setting-label">Snap to grid</span>
+              <button
+                type="button"
+                class="toggle"
+                id="toggle-snap"
+                role="switch"
+                aria-checked="true"
+              >
+                <span class="toggle-knob"></span>
+              </button>
+            </div>
+            <div class="setting-row">
+              <span class="setting-label">Grid size</span>
+              <div class="stepper">
+                <span class="stepper-value" id="cellSizeValue">32</span>
+                <div class="stepper-carets">
+                  <button type="button" class="stepper-btn" id="cellSizeUp">
+                    ▲
+                  </button>
+                  <button type="button" class="stepper-btn" id="cellSizeDown">
+                    ▼
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="setting-row">
+              <span class="setting-label">Grid Origin</span>
+              <div class="segmented" id="gridOriginControl" role="group">
+                <div class="switch-indicator" aria-hidden="true"></div>
+                <button
+                  type="button"
+                  class="segmented-btn"
+                  data-value="topleft"
+                >
+                  TopLeft
+                </button>
+                <button
+                  type="button"
+                  class="segmented-btn is-selected"
+                  data-value="center"
+                >
+                  Center
+                </button>
+              </div>
+            </div>
+            <div class="setting-row">
+              <span class="setting-label">Keep previous clocks</span>
+              <button
+                type="button"
+                class="toggle"
+                id="toggle-keep"
+                role="switch"
+                aria-checked="false"
+              >
+                <span class="toggle-knob"></span>
+              </button>
+            </div>
+            <div class="setting-row">
+              <span class="setting-label">Minute markers</span>
+              <button
+                type="button"
+                class="toggle"
+                id="toggle-minutemarkers"
+                role="switch"
+                aria-checked="true"
+              >
+                <span class="toggle-knob"></span>
+              </button>
+            </div>
+            <div class="setting-row">
+              <span class="setting-label">Second hand</span>
+              <button
+                type="button"
+                class="toggle"
+                id="toggle-secondhand"
+                role="switch"
+                aria-checked="true"
+              >
+                <span class="toggle-knob"></span>
+              </button>
+            </div>
+            <div class="setting-row">
+              <span class="setting-label">Freeze time</span>
+              <button
+                type="button"
+                class="toggle"
+                id="toggle-freeze"
+                role="switch"
+                aria-checked="false"
+              >
+                <span class="toggle-knob"></span>
+              </button>
+            </div>
+            <div class="setting-row" data-depends-on="toggle-keep">
+              <span class="setting-label">Allow overlap</span>
+              <button
+                type="button"
+                class="toggle"
+                id="toggle-allow-overlap"
+                role="switch"
+                aria-checked="true"
+              >
+                <span class="toggle-knob"></span>
+              </button>
+            </div>
+          </div>
+        </section>
+        <section class="section section-grow">
+          <h2 class="section-label">Clocks</h2>
+          <div class="section-content">
+            <div id="clocksList">
+              <!-- rendered by JS, one .clock-row per clock -->
+            </div>
+          </div>
+        </section>
+        <div class="sidebar-actions">
+          <button type="button" class="chip-btn full-btn" id="clearAllBtn">Clear</button>
+        </div>
+      </div>
+    </aside>
+
+    <div id="snackbar" role="status" aria-live="polite"></div>
+
+    <script>
+      (function () {
+        "use strict";
+
+        // ---------- Theme ----------
+        const root = document.documentElement;
+        const themeLightBtn = document.getElementById("themeLightBtn");
+        const themeDarkBtn = document.getElementById("themeDarkBtn");
+        const themeSwitchEl = document.getElementById("theme-switch");
+        function setTheme(t) {
+          root.setAttribute("data-theme", t);
+          themeLightBtn.setAttribute("aria-pressed", String(t === "light"));
+          themeDarkBtn.setAttribute("aria-pressed", String(t === "dark"));
+          themeSwitchEl.dataset.active = t; // slides .switch-indicator via CSS
+        }
+        setTheme(
+          window.matchMedia &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light",
+        );
+        themeLightBtn.addEventListener("click", () => setTheme("light"));
+        themeDarkBtn.addEventListener("click", () => setTheme("dark"));
+
+        // ---------- Grid ----------
+        // Grid size used to be derived per-viewport (largest square that
+        // tiles the screen exactly, via the Euclidean algorithm). That's
+        // gone now -- GRID_SIZE is just a single fixed number, the same on
+        // every device, adjustable only via the sidebar's Grid size stepper.
+        const canvas = document.getElementById("canvas");
+        let GRID_SIZE = 32; // set by the Grid size stepper; same value on every device, no longer derived
+        let phaseX = 0,
+          phaseY = 0; // a point that lies exactly on a grid line, used as the snapping reference
+        let gridOrigin = "center"; // 'center' | 'topleft' -- set by the Grid Origin segmented control
+        let gridVisible = true; // set by the Grid toggle
+        let snapEnabled = true; // set by the Snap to grid toggle
+
+        function computeGrid() {
+          const vw = window.visualViewport ? window.visualViewport.width : window.innerWidth;
+          const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+          if (gridOrigin === "center") {
+            // Phased from the viewport's center, offset by half a cell, so the
+            // exact center point sits in the middle of a cell rather than on a line.
+            phaseX = vw / 2 - GRID_SIZE / 2;
+            phaseY = vh / 2 - GRID_SIZE / 2;
+          } else {
+            // TopLeft: grid lines start flush at the viewport's top-left corner.
+            phaseX = 0;
+            phaseY = 0;
+          }
+          root.style.setProperty("--cell-size", GRID_SIZE + "px");
+          // Half-cell offset: the gradient centers dots in their tiles, so
+          // backing the tiling up half a step puts those centers ON the grid
+          // lines -- the exact coordinates snap() targets.
+          canvas.style.backgroundPosition =
+            phaseX - GRID_SIZE / 2 + "px " + (phaseY - GRID_SIZE / 2) + "px";
+          canvas.classList.toggle("grid-hidden", !gridVisible);
+        }
+
+        computeGrid();
+
+        function snap(v, phase) {
+          if (!snapEnabled) return v;
+          return phase + Math.round((v - phase) / GRID_SIZE) * GRID_SIZE;
+        }
+
+        function onViewportResize() {
+          computeGrid(); // phase still re-centers on resize; size itself no longer depends on viewport
+          rescaleClocksToGrid();
+        }
+        window.addEventListener("resize", onViewportResize);
+        if (window.visualViewport)
+          window.visualViewport.addEventListener("resize", onViewportResize);
+
+        // ---------- Time source (freeze time toggle wires into this) ----------
+        let timeOverride = null; // set to a Date to freeze; null = live
+        let catchup = null; // active only right after unfreezing, see setFreeze() below
+
+        // Anticipation + overshoot: dips slightly negative right at the start
+        // (a small pull-back for momentum), rushes through 1, overshoots past
+        // it, then settles back down to exactly 1. Standard Penner easeInOutBack.
+        function easeInOutBack(t) {
+          const c1 = 1.70158;
+          const c2 = c1 * 1.525;
+          return t < 0.5
+            ? (Math.pow(2 * t, 2) * ((c2 + 1) * 2 * t - c2)) / 2
+            : (Math.pow(2 * t - 2, 2) * ((c2 + 1) * (t * 2 - 2) + c2) + 2) / 2;
+        }
+
+        function getNow() {
+          if (catchup) {
+            const t = (performance.now() - catchup.startPerf) / catchup.duration;
+            if (t >= 1) {
+              catchup = null;
+              return new Date();
+            }
+            const eased = easeInOutBack(t);
+            // Recomputed against a fresh Date.now() every frame (not a value
+            // captured once at the start), so the offset always eases toward
+            // whatever "live" actually is *right now* -- otherwise "now" keeps
+            // moving during the animation and arrival lands short, producing
+            // a small jump right at the end.
+            const offset = catchup.initialOffsetMs * (1 - eased);
+            return new Date(Date.now() + offset);
+          }
+          return timeOverride || new Date();
+        }
+
+        // ---------- Timezones ----------
+        // getNow() above returns a single shared instant (a real UTC moment,
+        // live/frozen/mid-catchup as appropriate). Each clock can show that
+        // same instant in a different timezone's wall-clock time -- see
+        // getWallTime() and state.timezone, consumed in updateHands().
+        const LOCAL_TIMEZONE = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+        function tzCityLabel(tz) {
+          if (tz === "UTC") return "UTC";
+          const last = tz.split("/").pop();
+          return last.replace(/_/g, " ");
+        }
+
+        // Offset is computed by re-parsing that zone's wall-clock time as if it
+        // were UTC and diffing against the real instant -- this stays correct
+        // across DST transitions, unlike a static IANA-name-to-offset table.
+        function tzOffsetMinutes(tz, date) {
+          const dtf = new Intl.DateTimeFormat("en-US", {
+            timeZone: tz,
+            hourCycle: "h23",
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+          });
+          const parts = {};
+          dtf.formatToParts(date).forEach((p) => {
+            parts[p.type] = p.value;
+          });
+          const asUTC = Date.UTC(
+            Number(parts.year),
+            Number(parts.month) - 1,
+            Number(parts.day),
+            Number(parts.hour),
+            Number(parts.minute),
+            Number(parts.second),
+          );
+          return Math.round((asUTC - date.getTime()) / 60000);
+        }
+
+        function tzOffsetLabel(offsetMinutes) {
+          const sign = offsetMinutes >= 0 ? "+" : "-";
+          const abs = Math.abs(offsetMinutes);
+          const h = Math.floor(abs / 60);
+          const m = abs % 60;
+          return `GMT ${sign}${h}:${String(m).padStart(2, "0")}`;
+        }
+
+        // "Tehran (GMT +3:30)"
+        function tzDisplayLabel(tz, date) {
+          return `${tzCityLabel(tz)} (${tzOffsetLabel(tzOffsetMinutes(tz, date))})`;
+        }
+
+        function getWallTime(date, tz) {
+          const dtf = new Intl.DateTimeFormat("en-US", {
+            timeZone: tz,
+            hourCycle: "h23",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+          });
+          const parts = {};
+          dtf.formatToParts(date).forEach((p) => {
+            parts[p.type] = p.value;
+          });
+          return {
+            hours: Number(parts.hour) % 24,
+            minutes: Number(parts.minute),
+            seconds: Number(parts.second),
+            ms: date.getMilliseconds(), // sub-second precision isn't in Intl's output; borrowed from the source Date for a smooth sweep
+          };
+        }
+
+        // Full IANA list, local zone guaranteed first, everything else sorted
+        // by current UTC offset (then city name) -- the usual order timezone
+        // pickers use. Intl.supportedValuesOf is broadly supported in current
+        // browsers; the fallback covers ones where it isn't.
+        const ALL_TIMEZONES = (() => {
+          let list;
+          try {
+            list = Intl.supportedValuesOf("timeZone");
+          } catch (e) {
+            list = [LOCAL_TIMEZONE, "UTC"];
+          }
+          if (!list.includes(LOCAL_TIMEZONE)) list = [LOCAL_TIMEZONE, ...list];
+          const now = new Date();
+          const rest = list
+            .filter((tz) => tz !== LOCAL_TIMEZONE)
+            .map((tz) => ({ tz, offset: tzOffsetMinutes(tz, now) }))
+            .sort(
+              (a, b) =>
+                a.offset - b.offset ||
+                tzCityLabel(a.tz).localeCompare(tzCityLabel(b.tz)),
+            )
+            .map((entry) => entry.tz);
+          return [LOCAL_TIMEZONE, ...rest];
+        })();
+
+        // ---------- Other sidebar-controlled display settings ----------
+        let showMinuteMarkers = true; // "Minute markers" toggle -- consumed in renderTicks()
+        let showSecondHand = true; // "Second hand" toggle -- consumed via the .no-second-hand class below
+        let keepPreviousClocks = false; // "Keep previous clocks" toggle -- consumed in finishMarquee()
+        let allowOverlap = true; // "Allow overlap" toggle -- consumed in finishMarquee() and the Random fill handler
+
+        function rectsOverlap(a, b) {
+          return !(
+            a.x + a.w <= b.x ||
+            a.x >= b.x + b.w ||
+            a.y + a.h <= b.y ||
+            a.y >= b.y + b.h
+          );
+        }
+        function overlapsExistingClock(x, y, w, h, exclude) {
+          const rect = { x, y, w, h };
+          return clocks.some(
+            (c) => c !== exclude && rectsOverlap(rect, { x: c.x, y: c.y, w: c.w, h: c.h }),
+          );
+        }
+
+        // ---------- Geometry: ray-cast from the center of a rounded rectangle ----------
+        // angleDeg: 0 = up (12 o'clock), increases clockwise, matching clock-face convention
+        // a, b: half-width, half-height of the rectangle; r: corner radius (r <= min(a,b))
+        function raycastRoundedRect(angleDeg, a, b, r) {
+          const rad = (angleDeg * Math.PI) / 180;
+          const dx = Math.sin(rad),
+            dy = -Math.cos(rad);
+          const ax = Math.abs(dx),
+            ay = Math.abs(dy);
+          const EPS = 1e-9;
+          let t;
+          if (ax < EPS) {
+            t = b / ay;
+          } else if (ay < EPS) {
+            t = a / ax;
+          } else {
+            const tVert = a / ax;
+            const yAtVert = tVert * ay;
+            if (yAtVert <= b - r + EPS) {
+              t = tVert;
+            } else {
+              const tHoriz = b / ay;
+              const xAtHoriz = tHoriz * ax;
+              if (xAtHoriz <= a - r + EPS) {
+                t = tHoriz;
+              } else {
+                const cx = a - r,
+                  cy = b - r;
+                const B = ax * cx + ay * cy; // ax^2+ay^2 == 1
+                const C = cx * cx + cy * cy - r * r;
+                const disc = Math.sqrt(Math.max(0, B * B - C));
+                t = B + disc;
+              }
+            }
+          }
+          return { dx, dy, t };
+        }
+
+        // ---------- Clock ----------
+        const SVG_NS = "http://www.w3.org/2000/svg";
+        const HOUR_HAND_WIDTH = 5;
+        const MINUTE_HAND_WIDTH = 3;
+        const SECOND_SHAFT_WIDTH = 1.5;
+        const SECOND_HEAD_WIDTH = 3.5;
+        const MIN_SIZE_FACTOR = 3; // minimum clock side, in grid cells, before ticks would start colliding
+        const MIN_SIZE_FLOOR = 90;
+
+        function minSize() {
+          return Math.max(GRID_SIZE * MIN_SIZE_FACTOR, MIN_SIZE_FLOOR);
+        }
+
+        // Pill (default): radius is half the shorter side, so the ends are
+        // full semicircles and a square marquee degenerates into a full
+        // circle. Rectangle: proportional to size (30% of the shorter side)
+        // rather than a small fixed px value -- reads as a soft, squircle-
+        // like rounded rectangle at any clock size instead of a sharp
+        // rectangle with a token corner nick. Capped at `half` so it can
+        // never reach/exceed the pill's own radius, keeping the two modes
+        // visually distinct even on a near-square clock. Both modes only
+        // affect where the ticks sit (see renderTicks) -- hands are always
+        // bounded by a plain circle regardless of shape, unaffected by this.
+        function cornerRadius(w, h, shape) {
+          const half = Math.min(w, h) / 2;
+          if (shape === "rectangle") {
+            return Math.min(0.3 * Math.min(w, h), half);
+          }
+          return half;
+        }
+
+        function makeLine(cls) {
+          const el = document.createElementNS(SVG_NS, "line");
+          el.setAttribute("class", cls);
+          return el;
+        }
+
+        // ---------- Custom timezone dropdown (context menu) ----------
+        // Fully custom, not a native <select> -- a plain button trigger plus
+        // a styled <ul role="listbox">, populated from ALL_TIMEZONES.
+        function wireTzDropdown(root, state) {
+          const trigger = root.querySelector(".tz-trigger");
+          const valueEl = root.querySelector(".tz-value");
+          const caret = root.querySelector(".tz-caret");
+          const optionsEl = root.querySelector(".tz-options");
+          const labelDate = new Date();
+
+          optionsEl.innerHTML = ALL_TIMEZONES.map(
+            (tz) =>
+              `<li role="option" data-value="${tz}" aria-selected="${tz === state.timezone}">${tzDisplayLabel(tz, labelDate)}</li>`,
+          ).join("");
+          valueEl.textContent = tzDisplayLabel(state.timezone, labelDate);
+
+          function close() {
+            optionsEl.hidden = true;
+            optionsEl.classList.remove("opens-up");
+            trigger.setAttribute("aria-expanded", "false");
+            root.classList.remove("is-open");
+            // Release focus so :focus-within stops holding the row's
+            // eye/trash actions open after the popover shuts.
+            if (root.contains(document.activeElement)) document.activeElement.blur();
+            // ponytail: revert-point -- restores #clocksList clipping so an
+            // open sidebar dropdown isn't boxed by the list scroller.
+            document.getElementById("clocksList")?.classList.remove("dropdown-open");
+          }
+          function open() {
+            optionsEl.hidden = false;
+            // ponytail: revert-point -- lets the open popover overflow the
+            // list visibly instead of spawning a second scrollbar.
+            if (root.closest("#clocksList")) {
+              document
+                .querySelectorAll(".tz-options")
+                .forEach((el) => {
+                  if (el !== optionsEl) el.hidden = true;
+                });
+              document.getElementById("clocksList")?.classList.add("dropdown-open");
+            }
+            // If the list would spill past the viewport bottom (rows near the
+            // end of a long scroller), flip it above the trigger so the
+            // nearest clipping ancestor never crops it.
+            var rect = optionsEl.getBoundingClientRect();
+            if (
+              rect.bottom > window.innerHeight &&
+              trigger.getBoundingClientRect().top > rect.height
+            ) {
+              optionsEl.classList.add("opens-up");
+            }
+            trigger.setAttribute("aria-expanded", "true");
+            root.classList.add("is-open");
+          }
+          function toggle(e) {
+            e.stopPropagation();
+            if (optionsEl.hidden) {
+              // Close any other open popover first -- its trigger state
+              // would otherwise go stale and need an extra outside click.
+              document.querySelectorAll(".tz-options").forEach((el) => {
+                if (el !== optionsEl && !el.hidden) {
+                  el.hidden = true;
+                  el.classList.remove("opens-up");
+                  const otherRoot = el.closest(".tz-input");
+                  otherRoot?.querySelector(".tz-trigger")?.setAttribute("aria-expanded", "false");
+                  otherRoot?.classList.remove("is-open");
+                }
+              });
+              open();
+            } else close();
+          }
+
+          trigger.addEventListener("click", toggle);
+          caret.addEventListener("click", toggle);
+
+          optionsEl.addEventListener("click", (e) => {
+            const li = e.target.closest("li");
+            if (!li) return;
+            e.stopPropagation(); // keep the document-level closer (below) from firing on this same click
+            close(); // close FIRST so the row survives, then change the zone
+            setClockTimezone(state, li.dataset.value);
+          });
+
+          document.addEventListener("click", (e) => {
+            if (!root.contains(e.target)) close();
+          });
+          document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape") close();
+          });
+        }
+
+        function createClock(x, y, w, h) {
+          const el = document.createElement("div");
+          el.className = "clock";
+          el.style.left = x + "px";
+          el.style.top = y + "px";
+          el.style.width = w + "px";
+          el.style.height = h + "px";
+
+          const svg = document.createElementNS(SVG_NS, "svg");
+          svg.setAttribute("width", w);
+          svg.setAttribute("height", h);
+          el.appendChild(svg);
+
+          const ticksGroup = document.createElementNS(SVG_NS, "g");
+          svg.appendChild(ticksGroup);
+
+          const hubBacking = document.createElementNS(SVG_NS, "circle");
+          hubBacking.setAttribute("class", "hub-backing");
+          hubBacking.style.fill = "var(--hand-major)";
+
+          const hub = document.createElementNS(SVG_NS, "circle");
+          hub.setAttribute("class", "hub");
+          hub.style.fill = "var(--hub)";
+
+          const hourLine = makeLine("hand hour");
+          hourLine.style.stroke = "var(--hand-major)";
+          hourLine.setAttribute("stroke-width", HOUR_HAND_WIDTH);
+          hourLine.setAttribute("stroke-linecap", "round");
+
+          const minuteLine = makeLine("hand minute");
+          minuteLine.style.stroke = "var(--hand-major)";
+          minuteLine.setAttribute("stroke-width", MINUTE_HAND_WIDTH);
+          minuteLine.setAttribute("stroke-linecap", "round");
+
+          const secondLine = makeLine("hand second");
+          secondLine.style.stroke = "var(--hand-second)";
+          secondLine.setAttribute("stroke-width", SECOND_SHAFT_WIDTH);
+          secondLine.setAttribute("stroke-linecap", "round");
+
+          // Flared tip on the seconds hand only, giving it a small flat-bladed,
+          // chisel-like head instead of tapering to the same thin line as the shaft.
+          const secondHead = makeLine("hand second-head");
+          secondHead.style.stroke = "var(--hand-second)";
+          secondHead.setAttribute("stroke-width", SECOND_HEAD_WIDTH);
+          secondHead.setAttribute("stroke-linecap", "butt");
+
+          // Stack, bottom to top: hub, hour, minute, hub, second — so no
+          // hand looks severed by the hub, and the second hand rides above
+          // everything else.
+          svg.appendChild(hubBacking);
+          svg.appendChild(hourLine);
+          svg.appendChild(minuteLine);
+          svg.appendChild(hub);
+          svg.appendChild(secondLine);
+          svg.appendChild(secondHead);
+
+          // Resize handles: 4 corners + 4 edge midpoints
+          const handles = {};
+          ["nw", "n", "ne", "e", "se", "s", "sw", "w"].forEach((corner) => {
+            const h = document.createElement("div");
+            h.className = "handle handle-" + corner;
+            el.appendChild(h);
+            handles[corner] = h;
+          });
+
+          // Per-clock context menu: shares the same "show-handles" tap-reveal state
+          // as the resize handles (see sidebar.css: .clock.show-handles .clock-context-menu).
+          // Timezone picker is fully custom (no native <select> at all) --
+          // still just one placeholder option for now, not yet wired to real
+          // per-timezone time math. See wireTzDropdown() below. Shape
+          // (circle/squircle) buttons are appearance-only for now, not
+          // wired to real behavior yet (see chat). Stack-order arrows ARE
+          // wired -- see moveClockInStack() below.
+          const contextMenu = document.createElement("div");
+          contextMenu.className = "clock-context-menu";
+          contextMenu.innerHTML = `
+              <button type="button" class="icon-btn stack-back-btn" title="Send backward">
+                <i class="ph-thin ph-arrow-down"></i>
+              </button>
+              <button type="button" class="icon-btn stack-forward-btn" title="Bring forward">
+                <i class="ph-thin ph-arrow-up"></i>
+              </button>
+              <div class="tz-input">
+                <button type="button" class="tz-trigger" aria-haspopup="listbox" aria-expanded="false">
+                  <span class="tz-value">Local time</span>
+                </button>
+                <button type="button" class="tz-caret" title="Open timezone picker">
+                  <i class="ph-light ph-caret-down"></i>
+                </button>
+                <ul class="tz-options" role="listbox" hidden></ul>
+              </div>
+              <div class="clock-switch" data-active="circle">
+                <div class="switch-indicator" aria-hidden="true"></div>
+                <button type="button" class="icon-btn shape-btn" data-shape="circle" aria-pressed="true" title="Circle">
+                  <span class="icon-stack">
+                    <i class="ph-thin ph-circle icon-thin"></i>
+                    <i class="ph-fill ph-circle icon-fill"></i>
+                  </span>
+                </button>
+                <button type="button" class="icon-btn shape-btn" data-shape="squircle" aria-pressed="false" title="Squircle">
+                  <span class="icon-stack">
+                    <i class="ph-thin ph-square icon-thin"></i>
+                    <i class="ph-fill ph-square icon-fill"></i>
+                  </span>
+                </button>
+              </div>
+              <button type="button" class="icon-btn danger" title="Delete this clock">
+                <i class="ph-fill ph-trash"></i>
+              </button>
+          `;
+          const stackBackBtn = contextMenu.querySelector(".stack-back-btn");
+          const stackForwardBtn = contextMenu.querySelector(".stack-forward-btn");
+          // Shape switch: appearance/animation only for now -- same sliding
+          // .switch-indicator + fill/thin icon-stack crossfade as #theme-switch.
+          const clockSwitchEl = contextMenu.querySelector(".clock-switch");
+          clockSwitchEl.querySelectorAll(".shape-btn").forEach((btn) => {
+            btn.addEventListener("click", (e) => {
+              e.stopPropagation();
+              clockSwitchEl.dataset.active = btn.dataset.shape;
+              clockSwitchEl
+                .querySelectorAll(".shape-btn")
+                .forEach((b) =>
+                  b.setAttribute("aria-pressed", String(b === btn)),
+                );
+              state.shape = btn.dataset.shape === "squircle" ? "rectangle" : "pill";
+              startTickShapeAnimation(state);
+            });
+          });
+          contextMenu
+            .querySelector(".icon-btn.danger")
+            .addEventListener("click", (e) => {
+              e.stopPropagation();
+              removeClock(state);
+            });
+          stackBackBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            moveClockInStack(state, 1); // down arrow: send backward, away from index 0
+          });
+          stackForwardBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            moveClockInStack(state, -1); // up arrow: bring forward, toward index 0
+          });
+          contextMenu.addEventListener("pointerdown", (e) =>
+            e.stopPropagation(),
+          );
+          el.appendChild(contextMenu);
+
+          const state = {
+            el,
+            svg,
+            ticksGroup,
+            hub,
+            hubBacking,
+            hourLine,
+            minuteLine,
+            secondLine,
+            secondHead,
+            handles,
+            contextMenu,
+            stackBackBtn,
+            stackForwardBtn,
+            timezone: LOCAL_TIMEZONE,
+            tzCatchup: null, // set by setClockTimezone() when the zone changes; consumed and cleared in updateHands()
+            shape: "pill", // "pill" | "rectangle" -- set by the shape-switch buttons, consumed in renderTicks() via cornerRadius()
+            x,
+            y,
+            w,
+            h,
+          };
+
+          layoutHandles(state);
+          renderTicks(state);
+          updateHands(state, getNow());
+          updateGridUnits(state);
+          positionContextMenu(state);
+          wireTzDropdown(contextMenu.querySelector(".tz-input"), state);
+
+          // The menu is `position: fixed` and can be clamped well away from
+          // the clock's own visual bounds (see positionContextMenu), so pure
+          // CSS :hover isn't enough -- moving the mouse through the gap
+          // between the clock and a far-off menu would count as leaving
+          // .clock and instantly hide it before the pointer ever arrives.
+          // JS-driven show/hide with a short grace period on close fixes
+          // that, while still reusing "show-handles" so nothing else
+          // (resize handles, the CSS itself) needs a second visibility
+          // mechanism.
+          let hoverHideTimer = null;
+          function showMenuOnHover() {
+            clearTimeout(hoverHideTimer);
+            positionContextMenu(state);
+            el.classList.add("show-handles");
+          }
+          function scheduleHideMenu() {
+            clearTimeout(hoverHideTimer);
+            hoverHideTimer = setTimeout(
+              () => el.classList.remove("show-handles"),
+              150,
+            );
+          }
+          el.addEventListener("mouseenter", showMenuOnHover);
+          el.addEventListener("mouseleave", scheduleHideMenu);
+          contextMenu.addEventListener("mouseenter", showMenuOnHover);
+          contextMenu.addEventListener("mouseleave", scheduleHideMenu);
+
+          attachClockInteractions(state);
+
+          return state;
+        }
+
+        // Centered exactly under its own clock (horizontally). Width comes
+        // from the menu's own content (no width property in CSS at all) --
+        // the sidebar isn't referenced here in any way. Vertical position
+        // tracks the clock's bottom edge with a small gap.
+        function positionContextMenu(state) {
+          const menu = state.contextMenu;
+          const margin = 12;
+          const menuWidth = menu.offsetWidth; // reliable now that hiding uses visibility, not display:none
+          const clockCenterX = state.x + state.w / 2;
+          menu.style.left = clockCenterX - menuWidth / 2 + "px";
+          menu.style.top = state.y + state.h + margin + "px";
+        }
+
+        function layoutHandles(state) {
+          const { w, h, handles } = state;
+          handles.nw.style.left = "0px";
+          handles.nw.style.top = "0px";
+          handles.n.style.left = w / 2 + "px";
+          handles.n.style.top = "0px";
+          handles.ne.style.left = w + "px";
+          handles.ne.style.top = "0px";
+          handles.e.style.left = w + "px";
+          handles.e.style.top = h / 2 + "px";
+          handles.se.style.left = w + "px";
+          handles.se.style.top = h + "px";
+          handles.s.style.left = w / 2 + "px";
+          handles.s.style.top = h + "px";
+          handles.sw.style.left = "0px";
+          handles.sw.style.top = h + "px";
+          handles.w.style.left = "0px";
+          handles.w.style.top = h / 2 + "px";
+        }
+
+        // Ticks occupy the outer TICK_DEPTH fraction of each ray's reach, so their
+        // length tracks the shape's own curvature: long where a ray travels far to
+        // reach a cap, short where it hits a nearby straight side, with no fixed
+        // absolute length and no separate hour/minute length rule.
+        const TICK_DEPTH = 0.22;
+        const MINUTE_TICK_WIDTH = SECOND_SHAFT_WIDTH; // matches the second hand's shaft width
+
+        function ensureTickLines(state) {
+          // Built once per clock, then reused forever -- recreating fresh
+          // <line> elements every call gives nothing stable to animate
+          // between old and new positions.
+          if (state.tickLines) return;
+          state.tickLines = [];
+          for (let i = 0; i < 60; i++) {
+            const isHour = i % 5 === 0;
+            const line = document.createElementNS(SVG_NS, "line");
+            line.style.stroke = isHour
+              ? "var(--tick-hour)"
+              : "var(--tick-minute)";
+            line.setAttribute(
+              "stroke-width",
+              isHour ? MINUTE_HAND_WIDTH : MINUTE_TICK_WIDTH,
+            );
+            line.setAttribute("stroke-linecap", "round");
+            state.ticksGroup.appendChild(line);
+            state.tickLines.push(line);
+          }
+        }
+
+        // Pure math only, no DOM writes -- lets the shape-change animation
+        // (below) compute a target once and interpolate toward it over
+        // several frames, instead of only being able to jump straight there.
+        function computeTickTargets(state) {
+          const { w, h } = state;
+          const a = w / 2,
+            b = h / 2;
+          const r = cornerRadius(w, h, state.shape);
+          const targets = [];
+          for (let i = 0; i < 60; i++) {
+            const isHour = i % 5 === 0;
+            if (!isHour && !showMinuteMarkers) {
+              targets.push({ visible: false });
+              continue;
+            }
+            const angle = i * 6;
+            const { dx, dy, t } = raycastRoundedRect(angle, a, b, r);
+            const innerT = t * (1 - TICK_DEPTH);
+            targets.push({
+              visible: true,
+              x1: a + dx * innerT,
+              y1: b + dy * innerT,
+              x2: a + dx * t,
+              y2: b + dy * t,
+            });
+          }
+          return targets;
+        }
+
+        function applyTickTargets(state, targets) {
+          targets.forEach((tgt, i) => {
+            const line = state.tickLines[i];
+            if (!tgt.visible) {
+              line.style.display = "none";
+              return;
+            }
+            line.style.display = "";
+            line.setAttribute("x1", tgt.x1);
+            line.setAttribute("y1", tgt.y1);
+            line.setAttribute("x2", tgt.x2);
+            line.setAttribute("y2", tgt.y2);
+          });
+
+          const { w, h, hub, hubBacking } = state;
+          const a = w / 2,
+            b = h / 2;
+          // ponytail: revert-point -- smooth hub scaling through the approved
+          // 4/6/8 calibration points (shortest side 200/400/600): lerp between
+          // them, clamped flat outside. Revert: delete the lerp, keep hubR = 6.
+          const shortest = Math.min(w, h);
+          const stops = [[200, 4], [400, 6], [600, 8]];
+          let hubR = stops[0][1];
+          if (shortest >= stops[stops.length - 1][0]) {
+            hubR = stops[stops.length - 1][1];
+          } else if (shortest > stops[0][0]) {
+            for (let s = 0; s < stops.length - 1; s++) {
+              const [x0, y0] = stops[s];
+              const [x1, y1] = stops[s + 1];
+              if (shortest >= x0 && shortest <= x1) {
+                hubR = y0 + ((y1 - y0) * (shortest - x0)) / (x1 - x0);
+                break;
+              }
+            }
+          }
+          const hubBackingR = hubR + 2;
+          hubBacking.setAttribute("cx", a);
+          hubBacking.setAttribute("cy", b);
+          hubBacking.setAttribute("r", hubBackingR);
+          hub.setAttribute("cx", a);
+          hub.setAttribute("cy", b);
+          hub.setAttribute("r", hubR);
+        }
+
+        // Instant path -- used for creation, resize-dragging (every frame;
+        // must stay 1:1 with the pointer, never eased), and the Minute
+        // markers toggle.
+        function renderTicks(state) {
+          ensureTickLines(state);
+          applyTickTargets(state, computeTickTargets(state));
+        }
+
+        function easeInOutCubic(t) {
+          return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+        }
+
+        // Animated path -- used only by the shape-switch buttons. Captures
+        // each tick's current on-screen position as "from", computes the
+        // new shape's positions as "to", and lets the main tick() loop
+        // (see animateTickShape below) interpolate between them frame by
+        // frame -- the same manual-interpolation approach the hands already
+        // use for the freeze/timezone catch-up animations, since CSS
+        // transitions don't apply to a <line>'s x1/y1/x2/y2 (unlike cx/cy/r
+        // on a circle, these aren't in the small set of SVG geometry
+        // properties CSS transitions actually support).
+        function startTickShapeAnimation(state) {
+          ensureTickLines(state);
+          if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+            applyTickTargets(state, computeTickTargets(state));
+            return;
+          }
+          const from = state.tickLines.map((line) => ({
+            visible: line.style.display !== "none",
+            x1: parseFloat(line.getAttribute("x1")) || 0,
+            y1: parseFloat(line.getAttribute("y1")) || 0,
+            x2: parseFloat(line.getAttribute("x2")) || 0,
+            y2: parseFloat(line.getAttribute("y2")) || 0,
+          }));
+          const to = computeTickTargets(state);
+          state.tickShapeAnim = {
+            startPerf: performance.now(),
+            duration: 160,
+            from,
+            to,
+          };
+        }
+
+        function animateTickShape(state) {
+          const { startPerf, duration, from, to } = state.tickShapeAnim;
+          const t = (performance.now() - startPerf) / duration;
+          if (t >= 1) {
+            applyTickTargets(state, to);
+            state.tickShapeAnim = null;
+            return;
+          }
+          const eased = easeInOutCubic(t);
+          const interpolated = to.map((target, i) => {
+            if (!target.visible) return target;
+            const f = from[i].visible ? from[i] : target; // ticks hidden a moment ago (minute markers) fade in at their target position rather than sliding from a stale spot
+            return {
+              visible: true,
+              x1: f.x1 + (target.x1 - f.x1) * eased,
+              y1: f.y1 + (target.y1 - f.y1) * eased,
+              x2: f.x2 + (target.x2 - f.x2) * eased,
+              y2: f.y2 + (target.y2 - f.y2) * eased,
+            };
+          });
+          applyTickTargets(state, interpolated);
+        }
+
+        // Hands are confined to a plain circle (not the pill), so reading the time
+        // isn't distorted by the pill's aspect ratio. Diameter = the shorter side.
+        const HAND_TAIL_FRAC = 0.18; // tail length, as a fraction of each hand's own forward length
+        const SECOND_TAIL_GAP_FRAC = 0.3; // portion of the tail nearest the hub kept as a plain thin gap before the flare begins
+
+        function computeHandAngles(wall) {
+          const sec = wall.seconds + wall.ms / 1000;
+          const min = wall.minutes + sec / 60;
+          const hr = (wall.hours % 12) + min / 60;
+          return { hour: hr * 30, minute: min * 6, second: sec * 6 };
+        }
+
+        // Smallest signed delta (in (-180, 180]) that takes `from` to
+        // something congruent with `to` mod 360 -- i.e. the short way
+        // around the dial, never the long way.
+        function shortestAngleDelta(from, to) {
+          let delta = (to - from) % 360;
+          if (delta > 180) delta -= 360;
+          if (delta < -180) delta += 360;
+          return delta;
+        }
+
+        function updateHands(state, now) {
+          const { w, h, hourLine, minuteLine, secondLine, secondHead } = state;
+          const a = w / 2,
+            b = h / 2;
+          const radius = Math.min(a, b);
+
+          const target = computeHandAngles(
+            getWallTime(now, state.timezone || LOCAL_TIMEZONE),
+          );
+          let hourAngle = target.hour;
+          let minAngle = target.minute;
+          let secAngle = target.second;
+
+          // Same easeInOutBack curve and duration as the freeze/unfreeze
+          // catch-up, but applied to each hand's ANGLE, not to the underlying
+          // time value -- animating time itself would force the second hand
+          // through every intermediate second between two timezones (which,
+          // for anything more than a few minutes apart, looks like it's
+          // spinning wildly). Angle-space + shortest-path means the most any
+          // hand ever swings beyond its normal forward tick is 180 degrees.
+          if (state.tzCatchup) {
+            const t =
+              (performance.now() - state.tzCatchup.startPerf) /
+              state.tzCatchup.duration;
+            if (t >= 1) {
+              state.tzCatchup = null;
+            } else {
+              const remaining = 1 - easeInOutBack(t);
+              hourAngle += state.tzCatchup.initialOffsets.hour * remaining;
+              minAngle += state.tzCatchup.initialOffsets.minute * remaining;
+              secAngle += state.tzCatchup.initialOffsets.second * remaining;
+            }
+          }
+
+          setHand(hourLine, hourAngle, 0.5, a, b, radius);
+          setHand(minuteLine, minAngle, 1, a, b, radius);
+          setSecondHand(secondLine, secondHead, secAngle, 1, a, b, radius);
+        }
+
+        // Single source of truth for changing a clock's timezone -- called
+        // from both the context menu's custom dropdown and the sidebar
+        // list's native <select>, so either one changing it updates the
+        // hands immediately and keeps the other surface's displayed value
+        // in sync (renderClocksList() rebuilds the sidebar row; the context
+        // menu's own .tz-value is updated directly here since it isn't
+        // rebuilt from scratch the way the sidebar list is).
+        function setClockTimezone(state, tz) {
+          const now = getNow();
+          const oldTz = state.timezone || LOCAL_TIMEZONE;
+          if (tz !== oldTz) {
+            const oldAngles = computeHandAngles(getWallTime(now, oldTz));
+            const newAngles = computeHandAngles(getWallTime(now, tz));
+            state.tzCatchup = {
+              initialOffsets: {
+                hour: shortestAngleDelta(newAngles.hour, oldAngles.hour),
+                minute: shortestAngleDelta(newAngles.minute, oldAngles.minute),
+                second: shortestAngleDelta(newAngles.second, oldAngles.second),
+              },
+              startPerf: performance.now(),
+              duration: 650, // matches the freeze/unfreeze catch-up's duration
+            };
+          }
+          state.timezone = tz;
+          updateHands(state, now);
+          const valueEl = state.contextMenu.querySelector(".tz-value");
+          if (valueEl) valueEl.textContent = tzDisplayLabel(tz, new Date());
+          const optionsEl = state.contextMenu.querySelector(".tz-options");
+          if (optionsEl) {
+            optionsEl
+              .querySelectorAll("li")
+              .forEach((li) =>
+                li.setAttribute("aria-selected", String(li.dataset.value === tz)),
+              );
+          }
+          // Skip the list rebuild when the change came from a sidebar row:
+          // renderClocksList() would destroy the row mid-interaction (killing
+          // the eye/trash hover state and the catch-up animation's trigger
+          // context). The row's own .tz-value is already correct -- the
+          // setClockTimezone caller updates it -- and indices only change on
+          // add/remove/reorder, never on a timezone pick. The sidebar row
+          // marks itself via state._fromSidebarRow around the call (see
+          // renderClocksList below).
+          if (!state._fromSidebarRow) renderClocksList();
+        }
+
+        function handVector(angleDeg) {
+          const rad = (angleDeg * Math.PI) / 180;
+          return { dx: Math.sin(rad), dy: -Math.cos(rad) };
+        }
+
+        function setHand(line, angle, frac, cx, cy, radius) {
+          const { dx, dy } = handVector(angle);
+          const forwardLen = radius * frac;
+          const tailLen = forwardLen * HAND_TAIL_FRAC;
+          line.setAttribute("x1", cx - dx * tailLen);
+          line.setAttribute("y1", cy - dy * tailLen);
+          line.setAttribute("x2", cx + dx * forwardLen);
+          line.setAttribute("y2", cy + dy * forwardLen);
+        }
+
+        function setSecondHand(shaft, head, angle, frac, cx, cy, radius) {
+          // Thin shaft: one continuous line, tail through the pivot to the tip.
+          // The flare below is a separate overlay, so this line is never broken.
+          setHand(shaft, angle, frac, cx, cy, radius);
+          const { dx, dy } = handVector(angle);
+          const tailLen = radius * frac * HAND_TAIL_FRAC;
+          const gapLen = tailLen * SECOND_TAIL_GAP_FRAC;
+
+          // Flare: sits on the tail, past a small gap from the hub, running out to
+          // the tail's very end — reading outward from the hub: hub, gap, chisel.
+          head.setAttribute("x1", cx - dx * gapLen);
+          head.setAttribute("y1", cy - dy * gapLen);
+          head.setAttribute("x2", cx - dx * tailLen);
+          head.setAttribute("y2", cy - dy * tailLen);
+        }
+
+        function updateGridUnits(state) {
+          state.gridX = (state.x - phaseX) / GRID_SIZE;
+          state.gridY = (state.y - phaseY) / GRID_SIZE;
+          state.gridW = state.w / GRID_SIZE;
+          state.gridH = state.h / GRID_SIZE;
+        }
+
+        function resizeClock(state, x, y, w, h) {
+          w = Math.max(w, minSize());
+          h = Math.max(h, minSize());
+          state.x = x;
+          state.y = y;
+          state.w = w;
+          state.h = h;
+          state.el.style.left = x + "px";
+          state.el.style.top = y + "px";
+          state.el.style.width = w + "px";
+          state.el.style.height = h + "px";
+          state.svg.setAttribute("width", w);
+          state.svg.setAttribute("height", h);
+          layoutHandles(state);
+          renderTicks(state);
+          updateHands(state, getNow());
+          updateGridUnits(state);
+          positionContextMenu(state);
+        }
+
+        // Re-derives each clock's pixel position/size from its stored grid-unit
+        // footprint against the newly recomputed GRID_SIZE and phase, so a clock
+        // keeps the same footprint relative to the (re-centered) grid, rather than
+        // drifting from it or landing out of alignment when the window resizes.
+        function rescaleClocksToGrid() {
+          clocks.forEach((c) => {
+            resizeClock(
+              c,
+              phaseX + c.gridX * GRID_SIZE,
+              phaseY + c.gridY * GRID_SIZE,
+              c.gridW * GRID_SIZE,
+              c.gridH * GRID_SIZE,
+            );
+          });
+        }
+
+        // ---------- Interaction: creating a clock via marquee ----------
+        let clocks = [];
+
+        function clearClocks() {
+          clocks.forEach((c) => c.el.remove());
+          clocks = [];
+          renderClocksList();
+        }
+
+        function removeClock(state) {
+          state.el.remove();
+          clocks = clocks.filter((c) => c !== state);
+          refreshAllStackButtons();
+          renderClocksList();
+        }
+
+        // ---------- Clock stacking order ----------
+        // Deliberately DOM-order based, not z-index: giving each .clock an
+        // explicit z-index would make it establish its own stacking context,
+        // which would trap that clock's context menu (position:fixed,
+        // z-index:50) inside it -- a clock stacked further back would then
+        // have its menu rendered behind a clock stacked in front of it even
+        // while hovering the back one, which defeats the point. Reordering
+        // the actual DOM nodes avoids that entirely, and only ever affects
+        // ordering among clocks.el themselves (all children of #canvas) --
+        // it can't touch #sidebar's stacking since that's a sibling of
+        // #canvas, not a member of this reordering at all.
+        //
+        // Convention: clocks[0] is the TOPMOST clock (also "1" in the
+        // sidebar list, via renderClocksList's i+1). DOM stacking puts
+        // later-appended elements on top, so building the array in reverse
+        // order is what makes index 0 end up appended last.
+        function applyStackOrder() {
+          for (let i = clocks.length - 1; i >= 0; i--) {
+            canvas.appendChild(clocks[i].el);
+          }
+        }
+
+        function updateStackButtons(state) {
+          const idx = clocks.indexOf(state);
+          if (idx === -1) return;
+          state.stackForwardBtn.disabled = idx === 0; // already topmost
+          state.stackBackBtn.disabled = idx === clocks.length - 1; // already bottommost
+        }
+
+        function refreshAllStackButtons() {
+          clocks.forEach(updateStackButtons);
+        }
+
+        // direction: -1 moves toward index 0 (forward/up, toward the top),
+        // +1 moves toward the end (backward/down, toward the bottom).
+        function moveClockInStack(state, direction) {
+          const idx = clocks.indexOf(state);
+          if (idx === -1) return;
+          const targetIdx = idx + direction;
+          if (targetIdx < 0 || targetIdx >= clocks.length) return; // already at the top/bottom
+          const moved = clocks[targetIdx];
+          clocks[targetIdx] = clocks[idx];
+          clocks[idx] = moved;
+          applyStackOrder();
+          refreshAllStackButtons();
+          renderClocksList();
+        }
+
+        document
+          .getElementById("clearAllBtn")
+          .addEventListener("click", clearClocks);
+
+        let dragging = null; // marquee-in-progress state
+        let marqueeEl = null;
+        const DRAG_DISTANCE_THRESHOLD = 5; // px of raw pointer movement below which a press counts as a click/tap, not a drag
+
+        canvas.addEventListener("pointerdown", (e) => {
+          if (e.target !== canvas) return; // ignore clicks starting on an existing clock/handle
+          canvas.setPointerCapture(e.pointerId);
+          const startX = snap(e.clientX, phaseX),
+            startY = snap(e.clientY, phaseY);
+          dragging = {
+            startX,
+            startY,
+            rawStartX: e.clientX,
+            rawStartY: e.clientY,
+            pointerId: e.pointerId,
+          };
+
+          marqueeEl = document.createElement("div");
+          marqueeEl.className = "marquee";
+          marqueeEl.style.left = startX + "px";
+          marqueeEl.style.top = startY + "px";
+          marqueeEl.style.width = "0px";
+          marqueeEl.style.height = "0px";
+          document.body.appendChild(marqueeEl);
+        });
+
+        canvas.addEventListener("pointermove", (e) => {
+          if (!dragging || e.pointerId !== dragging.pointerId) return;
+          const curX = snap(e.clientX, phaseX),
+            curY = snap(e.clientY, phaseY);
+          const x = Math.min(dragging.startX, curX);
+          const y = Math.min(dragging.startY, curY);
+          const w = Math.abs(curX - dragging.startX);
+          const h = Math.abs(curY - dragging.startY);
+          marqueeEl.style.left = x + "px";
+          marqueeEl.style.top = y + "px";
+          marqueeEl.style.width = w + "px";
+          marqueeEl.style.height = h + "px";
+        });
+
+        // ---------- Snackbar ----------
+        const snackbarEl = document.getElementById("snackbar");
+        let snackbarTimer = null;
+
+        function showSnackbar(message) {
+          snackbarEl.textContent = message;
+          clearTimeout(snackbarTimer);
+          // Restart the transition cleanly even if a snackbar is already showing.
+          snackbarEl.classList.remove("visible");
+          void snackbarEl.offsetWidth; // force reflow so the removed class actually takes effect first
+          snackbarEl.classList.add("visible");
+          snackbarTimer = setTimeout(() => {
+            snackbarEl.classList.remove("visible");
+          }, 1000);
+        }
+
+        function notifyDragRequired() {
+          showSnackbar("Drag on the grid to draw a clock");
+        }
+
+        function notifySelectionTooSmall() {
+          showSnackbar(
+            `Selection can't be smaller than ${MIN_SIZE_FACTOR} grid cells`,
+          );
+        }
+
+        function notifyOverlap() {
+          showSnackbar("Clocks can't overlap");
+        }
+
+        function finishMarquee(e) {
+          if (!dragging || e.pointerId !== dragging.pointerId) return;
+          const rawDist = Math.hypot(
+            e.clientX - dragging.rawStartX,
+            e.clientY - dragging.rawStartY,
+          );
+          const curX = snap(e.clientX, phaseX),
+            curY = snap(e.clientY, phaseY);
+          let x = Math.min(dragging.startX, curX);
+          let y = Math.min(dragging.startY, curY);
+          let w = Math.abs(curX - dragging.startX);
+          let h = Math.abs(curY - dragging.startY);
+
+          if (marqueeEl) {
+            marqueeEl.remove();
+            marqueeEl = null;
+          }
+          dragging = null;
+
+          if (rawDist < DRAG_DISTANCE_THRESHOLD) {
+            notifyDragRequired();
+            return;
+          }
+
+          if (w < minSize() || h < minSize()) {
+            notifySelectionTooSmall();
+            return;
+          }
+
+          if (!keepPreviousClocks) clearClocks(); // default: a new marquee replaces the previous clock(s)
+
+          if (!allowOverlap && overlapsExistingClock(x, y, w, h)) {
+            notifyOverlap();
+            return;
+          }
+
+          const clock = createClock(x, y, w, h);
+          clocks.unshift(clock); // new clocks appear on top -- see the stacking-order convention above
+          applyStackOrder();
+          refreshAllStackButtons();
+          renderClocksList();
+        }
+
+        canvas.addEventListener("pointerup", finishMarquee);
+        canvas.addEventListener("pointercancel", finishMarquee);
+
+        // ---------- Interaction: moving & resizing an existing clock ----------
+        function attachClockInteractions(state) {
+          let moving = null;
+
+          const TAP_MOVE_THRESHOLD = 5; // px of movement allowed before a press counts as a drag, not a tap
+          const TAP_TIME_THRESHOLD = 300; // ms
+
+          state.el.addEventListener("pointerdown", (e) => {
+            // Handles call stopPropagation on their own pointerdown, so any event
+            // that reaches here (whether the target is the div, the SVG, or a
+            // tick/hand inside it) is safe to treat as the start of a move.
+            state.el.setPointerCapture(e.pointerId);
+            moving = {
+              pointerId: e.pointerId,
+              offX: e.clientX - state.x,
+              offY: e.clientY - state.y,
+              startClientX: e.clientX,
+              startClientY: e.clientY,
+              startTime: performance.now(),
+              moved: false,
+            };
+            e.stopPropagation();
+          });
+          state.el.addEventListener("pointermove", (e) => {
+            if (!moving || e.pointerId !== moving.pointerId) return;
+            const dist = Math.hypot(
+              e.clientX - moving.startClientX,
+              e.clientY - moving.startClientY,
+            );
+            if (dist > TAP_MOVE_THRESHOLD) moving.moved = true;
+            const x = snap(e.clientX - moving.offX, phaseX);
+            const y = snap(e.clientY - moving.offY, phaseY);
+            if (!allowOverlap && overlapsExistingClock(x, y, state.w, state.h, state)) {
+              return; // would land on another clock -- hold at the last valid spot
+            }
+            state.x = x;
+            state.y = y;
+            state.el.style.left = x + "px";
+            state.el.style.top = y + "px";
+            positionContextMenu(state);
+          });
+          function stopMove(e) {
+            if (!moving || e.pointerId !== moving.pointerId) return;
+            const wasTap =
+              !moving.moved &&
+              performance.now() - moving.startTime < TAP_TIME_THRESHOLD;
+            moving = null;
+            if (wasTap) {
+              state.el.classList.toggle("show-handles");
+            } else {
+              updateGridUnits(state);
+            }
+          }
+          state.el.addEventListener("pointerup", stopMove);
+          state.el.addEventListener("pointercancel", stopMove);
+
+          // Once a dragged edge would push size below the minimum, freeze both
+          // size and position at exactly the minimum instead of letting position
+          // keep tracking the pointer — otherwise the box visibly slides across
+          // the grid even though its size has stopped shrinking. Expanding back
+          // out past the minimum resumes normal tracking immediately.
+          function clampResizeAxis(anchor, cur, min) {
+            const naturalSize = Math.abs(cur - anchor);
+            if (naturalSize < min) {
+              return { pos: cur < anchor ? anchor - min : anchor, size: min };
+            }
+            return { pos: Math.min(anchor, cur), size: naturalSize };
+          }
+
+          // Edge midpoints (n/s/e/w) only ever resize one axis; corners resize
+          // both. Locked axis keeps the clock's current x/w or y/h exactly as
+          // they are, ignoring pointer movement on that axis entirely.
+          const AXIS_LOCK = { n: "x", s: "x", e: "y", w: "y" };
+
+          Object.entries(state.handles).forEach(([corner, handle]) => {
+            let resizing = null;
+            handle.addEventListener("pointerdown", (e) => {
+              e.stopPropagation();
+              handle.setPointerCapture(e.pointerId);
+              resizing = {
+                pointerId: e.pointerId,
+                anchorX: corner.includes("e") ? state.x : state.x + state.w,
+                anchorY: corner.includes("s") ? state.y : state.y + state.h,
+              };
+            });
+            handle.addEventListener("pointermove", (e) => {
+              if (!resizing || e.pointerId !== resizing.pointerId) return;
+              const curX = snap(e.clientX, phaseX),
+                curY = snap(e.clientY, phaseY);
+              const m = minSize();
+              const lock = AXIS_LOCK[corner];
+
+              let x, w;
+              if (lock === "x") {
+                x = state.x;
+                w = state.w;
+              } else {
+                ({ pos: x, size: w } = clampResizeAxis(resizing.anchorX, curX, m));
+              }
+
+              let y, h;
+              if (lock === "y") {
+                y = state.y;
+                h = state.h;
+              } else {
+                ({ pos: y, size: h } = clampResizeAxis(resizing.anchorY, curY, m));
+              }
+
+              if (!allowOverlap && overlapsExistingClock(x, y, w, h, state)) {
+                e.stopPropagation();
+                return; // would grow into another clock -- hold at the last valid size
+              }
+
+              resizeClock(state, x, y, w, h);
+              e.stopPropagation();
+            });
+            function stopResize(e) {
+              if (!resizing || e.pointerId !== resizing.pointerId) return;
+              resizing = null;
+            }
+            handle.addEventListener("pointerup", stopResize);
+            handle.addEventListener("pointercancel", stopResize);
+          });
+        }
+
+        // ---------- Animation loop: smooth sweeping hands, live time ----------
+        function tick() {
+          const now = getNow();
+          clocks.forEach((c) => {
+            updateHands(c, now);
+            if (c.tickShapeAnim) animateTickShape(c);
+          });
+          requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
+
+        // ==========================================================================
+        // SIDEBAR WIRING
+        // Everything below reads/writes the state declared above (clocks, GRID_SIZE,
+        // GRID_SIZE, gridOrigin, gridVisible, snapEnabled, showMinuteMarkers,
+        // showSecondHand, keepPreviousClocks, timeOverride) and re-renders through
+        // the same functions the marquee/resize code already uses (computeGrid,
+        // rescaleClocksToGrid, renderTicks, updateHands), so there are two code
+        // paths driving the app (direct interaction, and the sidebar) but only one
+        // source of truth for each setting.
+        // ==========================================================================
+
+        // ---- generic toggle helper: flips aria-checked and calls back with the new value ----
+        function wireToggle(id, initial, onChange) {
+          const el = document.getElementById(id);
+          let value = initial;
+          el.setAttribute("aria-checked", String(value));
+          // Hover nudge (see sidebar.css): fires once per cursor entry.
+          // A class -- not :hover -- drives it, so flipping aria-checked on
+          // click can never restart it under a stationary cursor.
+          el.addEventListener("mouseenter", () => {
+            if (el.classList.contains("nudge")) return;
+            el.classList.add("nudge");
+          });
+          el.querySelector(".toggle-knob").addEventListener("animationend", () => {
+            el.classList.remove("nudge");
+          });
+          el.addEventListener("click", () => {
+            value = !value;
+            // Freeze-then-flip: if a hover nudge is mid-flight, its keyframe
+            // is painting over the transition's output -- removing .nudge
+            // would snap the knob back to the pre-flip rest point and then
+            // jump. Instead, capture the live position, kill the animation,
+            // and re-anchor from there so the on/off transition runs
+            // continuously from where the eye already sees the knob.
+            const knob = el.querySelector(".toggle-knob");
+            if (el.classList.contains("nudge")) {
+              const live = getComputedStyle(knob).transform;
+              el.classList.remove("nudge");
+              knob.style.transform = live === "none" ? "" : live;
+              // Inline matrix would pin the knob -- clear it next frame so
+              // the aria-checked rule (and its transition) takes over.
+              requestAnimationFrame(() => requestAnimationFrame(() => {
+                knob.style.transform = "";
+              }));
+            }
+            el.setAttribute("aria-checked", String(value));
+            onChange(value);
+          });
+        }
+
+        // ---- The Clear row only makes sense with "keep previous clocks" on --
+        // greyed out, not hidden, so the layout doesn't reflow. ----
+        const clearRow = document.querySelector('[data-depends-on="toggle-keep"]');
+        function updateClearRow(isEnabled) {
+          clearRow.classList.toggle("is-disabled", !isEnabled);
+        }
+        updateClearRow(keepPreviousClocks);
+
+        wireToggle("toggle-grid", gridVisible, (v) => {
+          gridVisible = v;
+          computeGrid();
+        });
+        wireToggle("toggle-snap", snapEnabled, (v) => {
+          snapEnabled = v;
+        });
+        wireToggle("toggle-keep", keepPreviousClocks, (v) => {
+          keepPreviousClocks = v;
+          updateClearRow(v);
+        });
+        wireToggle("toggle-minutemarkers", showMinuteMarkers, (v) => {
+          showMinuteMarkers = v;
+          clocks.forEach(renderTicks);
+        });
+        wireToggle("toggle-secondhand", showSecondHand, (v) => {
+          showSecondHand = v;
+          canvas.classList.toggle("no-second-hand", !v);
+        });
+        wireToggle("toggle-freeze", false, (v) => {
+          if (v) {
+            timeOverride = getNow(); // capture whatever's showing right now (mid-catchup or live)
+            catchup = null; // and stop any in-progress catch-up -- we're locked now
+          } else {
+            const fromMs = (timeOverride || new Date()).getTime();
+            timeOverride = null;
+            catchup = {
+              initialOffsetMs: fromMs - Date.now(), // how far behind live we are right now
+              startPerf: performance.now(),
+              duration: 650, // ms -- same "wind up, rush, overshoot, settle" regardless of how long it was frozen
+            };
+          }
+        });
+
+        wireToggle("toggle-allow-overlap", allowOverlap, (v) => {
+          allowOverlap = v;
+        });
+
+        // ---- Grid size stepper (used to be "minimum grid cell size" when size was
+        // derived from the viewport; now there's no derivation, so the stepper's
+        // value directly IS the grid size) ----
+        const GRID_SIZE_STEP = 4;
+        const cellSizeValueEl = document.getElementById("cellSizeValue");
+        function setGridSize(v) {
+          GRID_SIZE = Math.max(8, v); // 8px floor so the stepper can't be driven to something nonsensical
+          cellSizeValueEl.textContent = String(GRID_SIZE);
+          computeGrid();
+          rescaleClocksToGrid();
+        }
+        document
+          .getElementById("cellSizeUp")
+          .addEventListener("click", () => setGridSize(GRID_SIZE + GRID_SIZE_STEP));
+        document
+          .getElementById("cellSizeDown")
+          .addEventListener("click", () => setGridSize(GRID_SIZE - GRID_SIZE_STEP));
+
+        // ---- Grid Origin segmented control ----
+        const gridOriginControl = document.getElementById("gridOriginControl");
+        const gridOriginIndicator = gridOriginControl.querySelector(".switch-indicator");
+        const gridOriginButtons = document.querySelectorAll(
+          "#gridOriginControl .segmented-btn",
+        );
+        function positionGridOriginIndicator(btn) {
+          gridOriginIndicator.style.width = btn.offsetWidth + "px";
+          gridOriginIndicator.style.transform = `translateX(${btn.offsetLeft}px)`;
+        }
+        gridOriginButtons.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            gridOrigin = btn.dataset.value;
+            gridOriginButtons.forEach((b) =>
+              b.classList.toggle("is-selected", b === btn),
+            );
+            positionGridOriginIndicator(btn);
+            computeGrid();
+            rescaleClocksToGrid();
+          });
+        });
+        // Wait for fonts to load (rsms Inter changes button widths) AND a
+        // paint, so offsetWidth/offsetLeft are final before measuring.
+        const positionSelectedGridOrigin = () =>
+          positionGridOriginIndicator(
+            document.querySelector("#gridOriginControl .segmented-btn.is-selected"),
+          );
+        if (document.fonts && document.fonts.ready) {
+          document.fonts.ready.then(() => requestAnimationFrame(positionSelectedGridOrigin));
+        }
+        requestAnimationFrame(positionSelectedGridOrigin);
+
+        // ---- Clocks list (mirrors the `clocks` array; delete here == delete on canvas) ----
+        // Row anatomy per the DarkClock frame (grip / index / tz field), plus
+        // user-restored hover-revealed eye/trash actions. The timezone picker
+        // reuses wireTzDropdown -- the exact custom dropdown from the canvas
+        // context menu -- instead of a native <select>.
+        const clocksListEl = document.getElementById("clocksList");
+        function renderClocksList() {
+          clocksListEl.innerHTML = "";
+          clocks.forEach((c, i) => {
+            const row = document.createElement("div");
+            row.className = "clock-row";
+            row.innerHTML = `
+              <button type="button" class="clock-row-drag" title="Drag to reorder" aria-label="Drag to reorder clock ${i + 1}">
+                <i class="ph-thin ph-dots-six-vertical"></i>
+              </button>
+              <span class="clock-row-index">${i + 1}</span>
+              <div class="tz-input">
+                <button type="button" class="tz-trigger" aria-haspopup="listbox" aria-expanded="false">
+                  <span class="tz-value"></span>
+                </button>
+                <button type="button" class="tz-caret" title="Open timezone picker">
+                  <i class="ph-light ph-caret-down"></i>
+                </button>
+                <ul class="tz-options" role="listbox" hidden></ul>
+              </div>
+              <div class="clock-row-actions">
+                <button type="button" class="icon-btn" title="Toggle visibility">
+                  <i class="ph-thin ph-eye"></i>
+                </button>
+                <button type="button" class="icon-btn danger" title="Delete clock">
+                  <i class="ph-thin ph-trash"></i>
+                </button>
+              </div>
+            `;
+            wireTzDropdown(row.querySelector(".tz-input"), c);
+            // Sidebar-row picks route through setClockTimezone without the
+            // list rebuild (see the _fromSidebarRow guard there): the row's
+            // own .tz-value needs the same update the canvas menu gets, and
+            // the flag marks this call's origin around it. Capture phase so
+            // this runs BEFORE wireTzDropdown's own bubble-phase option
+            // handler below -- that one then sees tz === oldTz (no-op) and
+            // just closes the popover.
+            const rowValueEl = row.querySelector(".tz-input .tz-value");
+            rowValueEl.textContent = tzDisplayLabel(c.timezone || LOCAL_TIMEZONE, new Date());
+            row.querySelector(".tz-input").addEventListener(
+              "click",
+              (e) => {
+                const li = e.target.closest("li[data-value]");
+                if (!li || li.dataset.value === c.timezone) return;
+                e.stopPropagation(); // keep wireTzDropdown's handler out of this pick entirely
+                c._fromSidebarRow = true;
+                try {
+                  setClockTimezone(c, li.dataset.value);
+                } finally {
+                  c._fromSidebarRow = false;
+                }
+                rowValueEl.textContent = tzDisplayLabel(c.timezone, new Date());
+                // Close the popover directly (mirrors wireTzDropdown.close
+                // without reaching into its closure).
+                const popover = row.querySelector(".tz-options");
+                popover.hidden = true;
+                popover.classList.remove("opens-up");
+                row.querySelector(".tz-trigger").setAttribute("aria-expanded", "false");
+                row.querySelector(".tz-input").classList.remove("is-open");
+                document.getElementById("clocksList")?.classList.remove("dropdown-open");
+              },
+              true,
+            );
+            const eyeBtn = row.querySelector(".icon-btn:not(.danger)");
+            let visible = c.el.style.display !== "none";
+            eyeBtn.style.opacity = visible ? "1" : "0.4";
+            eyeBtn.addEventListener("click", () => {
+              visible = !visible;
+              c.el.style.display = visible ? "" : "none";
+              eyeBtn.style.opacity = visible ? "1" : "0.4";
+            });
+            row
+              .querySelector(".icon-btn.danger")
+              .addEventListener("click", () => removeClock(c));
+            // ---- Drag-to-reorder: pointer-driven, rows slide live (FLIP).
+            // Native HTML5 drag gives no per-frame cursor position and can't
+            // move the row itself, so this uses pointer events: the dragged
+            // row follows the cursor (fixed clone), siblings animate to their
+            // new slots live, and drop commits the array order.
+            const grip = row.querySelector(".clock-row-drag");
+            grip.addEventListener("pointerdown", (e) => {
+              e.preventDefault();
+              const rows = [...clocksListEl.querySelectorAll(".clock-row")];
+              const rowH = row.offsetHeight + 8; // 8px = #clocksList gap
+              const listRect = clocksListEl.getBoundingClientRect();
+              const grabOffsetY = e.clientY - row.getBoundingClientRect().top;
+              row.classList.add("is-dragging");
+              // Animate subsequent renders, not the grab itself.
+              clocksListEl.classList.add("is-sorting");
+
+              function move(ev) {
+                const maxY = rows.length * rowH - 8 - row.offsetHeight; // minus one trailing gap the last row doesn't have
+                const y = Math.max(
+                  0,
+                  Math.min(
+                    maxY,
+                    ev.clientY - listRect.top + clocksListEl.scrollTop - grabOffsetY,
+                  ),
+                );
+                row.style.transform = `translateY(${y - i * rowH}px)`;
+                // Nearest slot under the cursor; clamp to the list.
+                const slot = Math.max(
+                  0,
+                  Math.min(
+                    rows.length - 1,
+                    Math.round(
+                      (ev.clientY - listRect.top + clocksListEl.scrollTop - rowH / 2) / rowH,
+                    ),
+                  ),
+                );
+                rows.forEach((r, k) => {
+                  if (r === row) return;
+                  // Sibling's slot index after removing the dragged row:
+                  // rows after it shift up one, then the dragged row's
+                  // target slot pushes everyone at/after it down one.
+                  let slotK = k > i ? k - 1 : k;
+                  if (slotK >= slot) slotK += 1;
+                  const dy = (slotK - k) * rowH;
+                  r.style.transform = dy ? `translateY(${dy}px)` : "";
+                  // Live index numerals: each sibling shows the number it
+                  // would hold if dropped right now.
+                  const num = r.querySelector(".clock-row-index");
+                  if (num) num.textContent = slotK + 1;
+                });
+                const selfNum = row.querySelector(".clock-row-index");
+                if (selfNum) selfNum.textContent = slot + 1;
+                row.dataset.slot = slot;
+              }
+              function up() {
+                window.removeEventListener("pointermove", move);
+                window.removeEventListener("pointerup", up);
+                const slot = parseInt(row.dataset.slot || i, 10);
+                row.style.transform = "";
+                rows.forEach((r) => (r.style.transform = ""));
+                row.classList.remove("is-dragging");
+                clocksListEl.classList.remove("is-sorting");
+                delete row.dataset.slot;
+                if (slot !== i) {
+                  const [moved] = clocks.splice(i, 1);
+                  clocks.splice(slot, 0, moved);
+                  applyStackOrder();
+                  refreshAllStackButtons();
+                }
+                renderClocksList();
+              }
+              window.addEventListener("pointermove", move);
+              window.addEventListener("pointerup", up);
+            });
+            clocksListEl.appendChild(row);
+          });
+        }
+        renderClocksList();
+
+        // ---- Default clock: one centered clock so the canvas never starts empty ----
+        // Grid-first: 8x4 whole cells (2:1 pill), anchored to the grid phase
+        // exactly like a marquee draw -- position is snapped to the phase so
+        // all four corners sit on grid lines, not derived from arithmetic
+        // centering that can drift half a cell off.
+        {
+          const vw = window.visualViewport ? window.visualViewport.width : window.innerWidth;
+          const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+          const cellsW = 16;
+          const cellsH = 7;
+          const w = cellsW * GRID_SIZE;
+          const h = cellsH * GRID_SIZE;
+          // Nearest grid line to the free-strip center (same strip the
+          // snackbar centers over -- see #snackbar in app.css).
+          const strip =
+            vw - 2 * 32 - document.getElementById("sidebar").offsetWidth;
+          const clock = createClock(
+            snap(32 + (strip - w) / 2, phaseX),
+            snap(vh / 2 - h / 2, phaseY),
+            w,
+            h,
+          );
+          clocks.unshift(clock);
+          applyStackOrder();
+          refreshAllStackButtons();
+          renderClocksList();
+        }
+
+        // ---- Collapse/expand (drag handle OR the header caret) ----
+        const sidebarEl = document.getElementById("sidebar");
+        function toggleSidebarState() {
+          sidebarEl.dataset.state =
+            sidebarEl.dataset.state === "collapsed"
+              ? "expanded"
+              : "collapsed";
+        }
+        document
+          .getElementById("sidebar-handle")
+          .addEventListener("click", toggleSidebarState);
+        document
+          .getElementById("collapseBtn")
+          .addEventListener("click", toggleSidebarState);
+      })();
+    </script>
+  </body>
+</html>

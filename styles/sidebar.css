@@ -1,0 +1,761 @@
+/* ==============================================================================
+   SIDEBAR / SETTINGS PANEL
+
+   Every color in this file is one of the 13 tokens given for this UI, or an
+   explicit, commented default for something that wasn't covered. Nothing
+   here is a raw hex or an invented 14th token.
+
+   This file is scoped to the sidebar/settings panel ONLY. Anything reused
+   elsewhere (icon buttons, the switch-indicator pattern) lives in
+   components.css instead; the floating per-clock context menu has its own
+   clock-context-menu.css. --radius-multiplier and the corner-shape
+   @supports block also moved to components.css, since both are used well
+   beyond just the sidebar.
+
+   TOKEN MAP (as specified):
+     Text                              -> --sds-color-text-default-default
+     Page background                   -> --sds-color-background-default-default
+     Sidebar surface                   -> --sds-color-background-default-secondary
+     Buttons & timezone inputs         -> --sds-color-background-default-default
+     Icons (general)                   -> --sds-color-icon-default-default
+     Icons: sun + the context-menu
+       "circle" icon                   -> --sds-color-icon-default-tertiary
+     Delete icon                       -> --sds-color-icon-danger-on-danger
+     Delete icon container             -> --sds-color-background-danger-default
+                                           (see note below -- "Background/
+                                           Danger/Danger" doesn't exist verbatim
+                                           in the token set; Background/Danger
+                                           only has Default/Hover/Secondary/
+                                           Secondary Hover/Tertiary/Tertiary
+                                           Hover. "On Danger" content is meant
+                                           to sit on a "Danger Default"
+                                           surface elsewhere in this token set,
+                                           so that's the substitution here.
+                                           To use something else instead,
+                                           change --sds-color-background-danger-default
+                                           to any other Background/Danger/*
+                                           token below.)
+     Sidebar top handle line           -> --sds-color-background-default-tertiary
+
+   DEFAULTS FOR THINGS NOT COVERED (all reuse the 13 tokens above, nothing new):
+     - General-section row pills (Grid, Snap to grid, ...): defaulted to
+       --sds-color-background-default-tertiary. Change every `.setting-row`
+       background below if you had something else in mind.
+     - Toggle track/knob, segmented-control selected pill, stepper box:
+       defaulted to --sds-color-background-default-default (grouped under
+       your "buttons & inputs" rule). Search `.toggle`, `.segmented-btn`,
+       `.stepper` below to change.
+     - Snackbar: not part of this file (styled in index.html directly),
+       defaulted there to Background/Default/Secondary -- see that file's
+       #snackbar rule if you want it to match something else.
+
+   TYPOGRAPHY MAP (as specified):
+     Sidebar title ("Settings")   -> Heading   (no size given -> defaulted to
+                                                 Size Base; change every
+                                                 `--sds-typography-heading-*`
+                                                 reference below to `-size-small`
+                                                 or `-size-large` if you meant
+                                                 a different one)
+     "General" / "Clocks" labels -> Subheading (no size given -> defaulted to
+                                                 Size Medium; same deal, swap
+                                                 `-size-medium` for `-size-small`
+                                                 / `-size-large` if needed)
+     Everything else              -> Body       ("Single line/Body Base" isn't
+                                                 a literal path in Mode_1 --
+                                                 Body only has Size Small/
+                                                 Medium/Large, no "Base" --
+                                                 defaulted to Size Medium +
+                                                 Font Weight Regular)
+   ============================================================================== */
+
+:root {
+  --page-margin: 32px;
+  --mobile-margin: 16px;
+  --columns: 4;
+  --sidebar-width: calc((100vw - (var(--page-margin) * 2)) / var(--columns));
+  --sidebar-radius: calc(128px * var(--radius-multiplier));
+  /* Height of handle + header when collapsed */
+  --collapsed-height: 108px;
+
+}
+
+#sidebar {
+  position: fixed;
+  top: var(--page-margin);
+  right: var(--page-margin);
+  bottom: var(--page-margin);
+  width: var(--sidebar-width);
+  background: var(--sds-color-background-default-secondary);
+  /* Same stroke as the per-clock context menu's chrome, so the two floating
+     surfaces read as one family against the canvas. */
+  border: 1px solid var(--sds-color-border-default-default);
+  box-shadow: var(--floating-shadow);
+  border-radius: var(--sidebar-radius);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 40;
+  font-family: var(--sds-typography-body-font-family);
+  transition:
+    transform 250ms ease,
+    top 250ms ease,
+    bottom 250ms ease,
+    border-radius 250ms ease,
+    max-height 250ms ease;
+}
+
+/* Tablet */
+@media (max-width: 1023px) {
+  :root {
+    --columns: 3;
+  }
+}
+
+/* Desktop & Tablet collapsed -- matches DarkClockCollapsed frame: 108px header at bottom, animated */
+#sidebar[data-state="collapsed"] {
+  transform: translateY(
+    calc(100% - var(--collapsed-height) - var(--page-margin))
+  );
+  border-radius: var(--sidebar-radius) var(--sidebar-radius) 0 0;
+}
+
+#sidebar[data-state="expanded"] {
+  transform: translateY(0);
+  border-radius: var(--sidebar-radius);
+}
+
+/* Body animation */
+#sidebar-body {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  flex: 1;
+  overflow: auto;
+  opacity: 1;
+  padding: 0 32px 32px;
+  transition:
+    opacity 180ms ease,
+    max-height 250ms ease;
+}
+
+#sidebar[data-state="collapsed"] #sidebar-body {
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  pointer-events: none;
+  flex: 0 0 auto; /* kill the flex-grow so max-height: 0 actually wins */
+}
+
+/* ---------- Mobile ---------- */
+
+@media (max-width: 640px) {
+  :root {
+    --sidebar-width: calc(100vw - (var(--mobile-margin) * 2));
+  }
+
+  #sidebar {
+    left: var(--mobile-margin);
+    right: var(--mobile-margin);
+    width: auto;
+  }
+
+  /* Collapsed */
+  #sidebar[data-state="collapsed"] {
+    top: auto;
+    bottom: 0;
+    transform: none;
+    max-height: var(--collapsed-height);
+    border-radius: var(--sidebar-radius) var(--sidebar-radius) 0 0;
+  }
+
+  /* Expanded */
+  #sidebar[data-state="expanded"] {
+    top: var(--mobile-margin);
+    bottom: var(--mobile-margin);
+    transform: none;
+    max-height: none;
+    border-radius: var(--sidebar-radius);
+  }
+}
+
+#sidebar-header {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 32px 24px 32px;
+  gap: 24px;
+  flex-shrink: 0;
+}
+
+#sidebar-handle {
+  width: 20%;
+  height: 4px;
+  border-radius: 100vmax;
+  background: var(--sds-color-background-default-tertiary);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.sidebar-header-row {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+/* Collapse caret beside the title -- present in the DarkClock spec as a
+   24px CaretDown in a 40x40 zone, 16px before the "Settings" text. */
+.collapse-btn {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-right: 16px;
+  padding: 0;
+  border: none;
+  background: var(--sds-color-background-default-default);
+  color: var(--sds-color-icon-default-default);
+  cursor: pointer;
+  border-radius: calc(24px * var(--radius-multiplier));
+}
+
+.collapse-btn i {
+  font-size: 16px;
+  transition: transform 160ms ease;
+}
+
+/* ponytail: revert-point -- interactive states batch (hover/focus/active).
+   Covers: .collapse-btn, .toggle, .stepper-btn, .segmented-btn,
+   .tz-trigger/.tz-caret, .chip-btn/.full-btn, .clock-row-drag focus. */
+.collapse-btn:hover {
+  background: var(--sds-color-background-default-tertiary);
+}
+
+.collapse-btn:active {
+  background: var(--sds-color-background-default-default);
+}
+
+.collapse-btn:focus-visible,
+.toggle:focus-visible,
+.stepper-btn:focus-visible,
+.segmented-btn:focus-visible,
+.tz-trigger:focus-visible,
+.tz-caret:focus-visible,
+.chip-btn:focus-visible,
+.full-btn:focus-visible,
+.clock-row-drag:focus-visible,
+.icon-btn:focus-visible {
+  outline: 2px solid var(--sds-color-border-default-default);
+  outline-offset: 2px;
+}
+
+.stepper-btn:hover {
+  color: var(--sds-color-icon-default-default);
+}
+
+.stepper-btn:active {
+  color: var(--sds-color-icon-default-tertiary);
+}
+
+.segmented-btn:hover {
+  color: var(--sds-color-text-default-default);
+}
+
+.tz-trigger:hover .tz-value,
+.tz-caret:hover {
+  color: var(--sds-color-text-default-default);
+}
+
+.chip-btn:hover,
+.full-btn:hover {
+  background: var(--sds-color-background-default-tertiary);
+}
+
+.chip-btn:active,
+.full-btn:active {
+  background: var(--sds-color-background-default-default);
+}
+
+#sidebar[data-state="collapsed"] .collapse-btn i {
+  transform: rotate(180deg);
+}
+
+#sidebar-title {
+  margin: 0;
+  color: var(--sds-color-text-default-default);
+  font-family: var(--sds-typography-heading-font-family);
+  font-size: var(--sds-typography-heading-size-base);
+  font-weight: var(--sds-typography-heading-font-weight);
+  flex: 1;
+}
+
+#theme-switch {
+  position: relative;
+  display: flex;
+  background: var(--sds-color-background-default-default);
+  border-radius: calc(24px * var(--radius-multiplier));
+  padding: 4px;
+}
+
+
+#theme-switch .switch-indicator {
+  top: 4px;
+  left: 4px;
+  width: 32px;
+  height: 32px;
+  border-radius: calc(16px * var(--radius-multiplier));
+}
+
+#theme-switch[data-active="dark"] .switch-indicator {
+  transform: translateX(32px);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.section-grow {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.section-grow .section-content {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+
+.section-label {
+  margin: 0;
+  color: var(--sds-color-text-default-default);
+  font-family: var(--sds-typography-subheading-font-family);
+  font-size: var(--sds-typography-subheading-size-medium);
+  font-weight: var(--sds-typography-subheading-font-weight);
+}
+
+.section-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  border-radius: calc(8px * var(--radius-multiplier));
+  background: var(--sds-color-background-default-tertiary);
+  transition: opacity 150ms ease;
+}
+
+/* Greyed out (not hidden) when the row's parent toggle is off -- e.g. Clear
+   stays visible but inert unless "keep previous clocks" is on. Kept in
+   place rather than removed so the layout doesn't reflow and the setting
+   is still visible as "exists, currently inapplicable" rather than looking
+   like it vanished. Toggled via JS: updateDependents(). */
+.setting-row.is-disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* First item */
+.setting-row:first-child {
+  border-radius:
+    calc(32px * var(--radius-multiplier))
+    calc(32px * var(--radius-multiplier))
+    calc(8px * var(--radius-multiplier))
+    calc(8px * var(--radius-multiplier));
+}
+
+/* Last item */
+.setting-row:last-child {
+  border-radius:
+    calc(8px * var(--radius-multiplier))
+    calc(8px * var(--radius-multiplier))
+    calc(32px * var(--radius-multiplier))
+    calc(32px * var(--radius-multiplier));
+}
+
+/* Single item */
+.setting-row:first-child:last-child {
+  border-radius: calc(16px * var(--radius-multiplier));
+}
+
+.setting-label {
+  color: var(--sds-color-text-default-default);
+  font-family: var(--sds-typography-body-font-family);
+  font-size: var(--sds-typography-body-size-medium);
+  line-height: var(--sds-typography-body-line-height-single);
+  font-weight: var(--sds-typography-body-font-weight-regular);
+}
+
+/* ---------------- Toggle switch ---------------- */
+.toggle {
+  position: relative;
+  width: 40px;
+  height: 24px;
+  border-radius: calc(16px * var(--radius-multiplier));
+  border: none;
+  background: var(--sds-color-background-default-default);
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 0;
+}
+
+/* ponytail: revert-point -- toggle hover nudge: knob pulls 2px AWAY from its
+   rest side and hangs, fires once per hover entry (the .nudge class is
+   added on mouseenter and removed on animationend -- see wireToggle).
+   Reverses when the row is disabled. */
+@keyframes toggle-nudge-off {
+  0% { transform: translateX(0); }
+  30% { transform: translateX(2px); }
+  55% { transform: translateX(2px); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes toggle-nudge-on {
+  0% { transform: translateX(16px); }
+  30% { transform: translateX(14px); }
+  55% { transform: translateX(14px); }
+  100% { transform: translateX(16px); }
+}
+
+.toggle.nudge:not([aria-checked="true"]) .toggle-knob {
+  animation: toggle-nudge-off 450ms ease;
+}
+
+.toggle.nudge[aria-checked="true"] .toggle-knob {
+  animation: toggle-nudge-on 450ms ease;
+}
+
+/* Disabled rows (Snap/Grid-size/etc. when Grid is off): nudge the other way. */
+.setting-row.is-disabled .toggle.nudge:not([aria-checked="true"]) .toggle-knob {
+  animation-name: toggle-nudge-on;
+}
+
+.setting-row.is-disabled .toggle.nudge[aria-checked="true"] .toggle-knob {
+  animation-name: toggle-nudge-off;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toggle.nudge .toggle-knob {
+    animation: none;
+  }
+}
+
+.toggle-knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: calc(10px * var(--radius-multiplier));
+  background: var(--sds-color-icon-default-tertiary);
+  transition:
+    transform 160ms ease,
+    background 120ms ease;
+}
+
+.toggle[aria-checked="true"] .toggle-knob {
+  transform: translateX(16px);
+  background: var(--sds-color-icon-default-default);
+}
+
+/* ---------------- Stepper (Grid size) ---------------- */
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--sds-color-background-default-default);
+  border-radius: calc(16px * var(--radius-multiplier));
+  padding: 4px 8px;
+}
+
+.stepper-value {
+  color: var(--sds-color-text-default-default);
+  font-family: var(--sds-typography-body-font-family);
+  font-size: var(--sds-typography-body-size-medium);
+  line-height: var(--sds-typography-body-line-height-single);
+  font-weight: var(--sds-typography-body-font-weight-regular);
+  min-width: 24px;
+  text-align: center;
+}
+
+.stepper-carets {
+  display: flex;
+  flex-direction: column;
+}
+
+.stepper-btn {
+  border: none;
+  background: transparent;
+  padding: 0;
+  width: 16px;
+  height: 12px;
+  color: var(--sds-color-icon-default-default);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  line-height: 1;
+}
+
+/* ---------------- Segmented control (Grid Origin) ---------------- */
+.segmented {
+  position: relative;
+  display: flex;
+  background: var(--sds-color-background-default-default);
+  border-radius: calc(16px * var(--radius-multiplier));
+  padding: 4px;
+  /* gap: 2px; */
+}
+
+#gridOriginControl .switch-indicator {
+  top: 3px;
+  left: 0; /* base position; actual offset is set inline via transform by JS, since the two options have unequal widths */
+  height: calc(100% - 6px);
+  border-radius: calc(8px * var(--radius-multiplier));
+  transition:
+    transform 160ms ease,
+    width 160ms ease;
+}
+
+.segmented-btn {
+  position: relative;
+  z-index: 1;
+  border: none;
+  background: transparent;
+  /* border-radius: calc(8px * var(--radius-multiplier)); */
+  padding: 4px 8px;
+  color: var(--sds-color-text-default-tertiary);
+  font-family: var(--sds-typography-body-font-family);
+  font-size: var(--sds-typography-body-size-small);
+  line-height: var(--sds-typography-body-line-height-single);
+  font-weight: var(--sds-typography-body-font-weight-regular);
+  cursor: pointer;
+}
+
+.segmented-btn.is-selected {
+  color: var(--sds-color-text-default-default);
+}
+
+/* ---------------- Clocks list ---------------- */
+
+#clocksList {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* ponytail: revert-point -- while a sidebar dropdown is open, drop the
+   list's own scroller so the popover overflows visibly instead of getting
+   boxed in with a second scrollbar. */
+#clocksList.dropdown-open {
+  overflow: visible;
+}
+
+/* Live-sort animation states: while sorting, siblings glide to their slots
+   (the dragged row itself never transitions -- it tracks the pointer 1:1). */
+#clocksList.is-sorting .clock-row:not(.is-dragging) {
+  transition: transform 180ms ease;
+}
+
+.clock-row {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  border-radius: calc(16px * var(--radius-multiplier));
+}
+
+.clock-row.is-dragging {
+  position: relative;
+  z-index: 1;
+  opacity: 0.9;
+}
+
+.clock-row-drag {
+  width: 24px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--sds-color-icon-default-tertiary);
+  flex-shrink: 0;
+  cursor: grab;
+  border: none;
+  background: transparent;
+  padding: 0 8px; /* 40px hit area, glyph stays 24px centered */
+  background-clip: content-box;
+  transition: color 120ms ease;
+}
+
+.clock-row-drag:hover {
+  color: var(--sds-color-icon-default-default);
+}
+
+.clock-row-drag:active {
+  cursor: grabbing;
+  color: var(--sds-color-icon-default-default);
+}
+
+.clock-row-drag i {
+  font-size: 24px; /* DotsSixVertical is drawn 24x24 in the spec */
+}
+
+.clock-row-index {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  color: var(--sds-color-text-default-default);
+  font-family: var(--sds-typography-body-font-family);
+  font-size: var(--sds-typography-body-size-medium);
+  line-height: var(--sds-typography-body-line-height-single);
+  font-weight: var(--sds-typography-body-font-weight-regular);
+  flex-shrink: 0;
+}
+
+/* Rows reuse the context menu's custom dropdown (.tz-input markup wired by
+   wireTzDropdown). Its container/trigger chrome is scoped to
+   .clock-context-menu over there, so the row side re-declares it here,
+   sized to this row and filled per the "Buttons & timezone inputs" token
+   rule; .tz-value/.tz-caret/.tz-options are shared globals already. */
+.clock-row .tz-input {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  flex: 1;
+  min-width: 0;
+  height: 40px;
+  background: var(--sds-color-background-default-default);
+  border-radius: calc(8px * var(--radius-multiplier));
+  padding-left: 12px;
+}
+
+.clock-row .tz-input .tz-trigger {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: var(--sds-color-text-default-default);
+  font-family: var(--sds-typography-body-font-family);
+  font-size: var(--sds-typography-body-size-medium);
+  line-height: var(--sds-typography-body-line-height-single);
+  font-weight: var(--sds-typography-body-font-weight-regular);
+  cursor: pointer;
+  text-align: left;
+}
+
+.clock-row-actions {
+  display: flex;
+  align-items: center;
+  width: 0;
+  opacity: 0;
+  overflow: hidden;
+  margin-left: 0;
+
+  transition:
+    width 180ms ease,
+    opacity 180ms ease,
+    margin-left 180ms ease;
+}
+
+.clock-row:hover .clock-row-actions,
+.clock-row:focus-within .clock-row-actions {
+  width: 84px; /* two 40px buttons + 4px gap */
+  opacity: 1;
+  margin-left: 4px;
+}
+
+/* ponytail: revert-point -- eye/trash hover fill. Exception to the
+   color-only icon-button rule: these two sit on the row surface, so a
+   tertiary fill reads as the hover state where a color shift alone
+   doesn't. Scoped to .clock-row-actions so canvas/context-menu icon
+   buttons stay color-only. */
+.clock-row-actions .icon-btn:hover {
+  background: var(--sds-color-background-default-tertiary);
+}
+
+.clock-row-actions .icon-btn:active {
+  background: var(--sds-color-background-default-default);
+}
+
+/* Touch/stylus devices have no hover state, so :hover above would never
+   fire and these two buttons would be permanently unreachable from the
+   list. `(hover: none)` targets touch-primary devices specifically, so
+   mouse users still get the hover-reveal behavior unchanged. */
+@media (hover: none) {
+  .clock-row-actions {
+    width: 84px;
+    opacity: 1;
+    margin-left: 4px;
+  }
+}
+
+.clock-row .icon-btn {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  flex-shrink: 0;
+  color: var(--sds-color-icon-default-default);
+  border-radius: calc(24px * var(--radius-multiplier));
+}
+
+.clock-row .icon-btn i {
+  font-size: 24px;
+}
+
+.clock-row .icon-btn.danger {
+  color: var(--sds-color-icon-danger-default);
+}
+
+/* ---------------- Bottom action buttons ---------------- */
+.sidebar-actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.chip-btn,
+.full-btn {
+  background: var(--sds-color-background-default-default);
+  color: var(--sds-color-text-default-default);
+  font-family: var(--sds-typography-body-font-family);
+  font-size: var(--sds-typography-body-size-small);
+  line-height: var(--sds-typography-body-line-height-single);
+  font-weight: var(--sds-typography-body-font-weight-regular);
+  border: 1px solid var(--sds-color-border-default-default);
+  border-radius: 100vmax;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition:
+    background 120ms ease,
+    color 120ms ease,
+    border-color 120ms ease;
+}
+
+/* ponytail: test residue -- border kept clear per user; gradient reverted. */
+#clearAllBtn {
+  border: none;
+}
+
+.full-btn {
+  grid-column: 1 / -1; /* span both columns */
+}
+

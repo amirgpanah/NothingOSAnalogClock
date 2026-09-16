@@ -1,0 +1,216 @@
+/* ==============================================================================
+   SHARED COMPONENTS
+
+   Reusable UI atoms with no fixed home of their own -- used by both the
+   sidebar (theme switch, clock-list eye/trash) and the per-clock context
+   menu (shape switch, stack-order arrows, delete), so they live here rather
+   than being duplicated or arbitrarily assigned to one or the other.
+
+   Also owns --radius-multiplier and the squircle corner-shape system: both
+   are used by selectors across every stylesheet in this project (app.css,
+   sidebar.css, clock-context-menu.css), so centralizing them here avoids
+   the alternative of picking one of those files somewhat arbitrarily.
+   ============================================================================== */
+
+:root {
+  /* Every border-radius that's meant to pair with the squircle corner-shape
+     effect (in ANY of this project's stylesheets) is written as
+     `calc(Npx * var(--radius-multiplier))` instead of a plain px value.
+     Where corner-shape is actually supported (see the @supports block at
+     the bottom of this file -- the ONLY place corner-shape is declared
+     anywhere in the project) this multiplier stays 1, so nothing changes.
+     Where it isn't supported, the fallback below halves it instead -- a
+     plain circular corner at half the squircle's radius reads closer to
+     the intended shape than the full radius would, and corner-shape is
+     simply never set for those browsers rather than being set and
+     silently ignored. */
+  --radius-multiplier: 1;
+}
+
+@supports not (corner-shape: superellipse(2)) {
+  :root {
+    --radius-multiplier: 0.5;
+  }
+}
+
+.switch-indicator {
+  position: absolute;
+  background: var(--sds-color-background-default-secondary);
+  transition: transform 160ms ease;
+  z-index: 0;
+}
+
+
+.icon-btn {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0; /* browsers default <button> to padding: 1px 6px -- this was the icon-centering bug */
+  margin: 0;
+  border: none;
+  border-radius: calc(32px * var(--radius-multiplier));
+  background: transparent;
+  color: var(--sds-color-icon-default-tertiary);
+  cursor: pointer;
+  transition:
+    background 120ms ease,
+    color 120ms ease;
+}
+
+.icon-btn i {
+  font-size: 24px;
+  color: inherit;
+}
+
+.icon-stack {
+  position: relative;
+  display: inline-flex;
+  width: 24px;
+  height: 24px;
+}
+
+.icon-stack i {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: inherit;
+  /* Same timing as .toggle-knob's transform transition, so the two "switch"
+     patterns (theme selector, toggle) animate at a matching speed. Only
+     opacity can be animated here -- thin and fill are two different glyphs
+     in the icon font, not two states of one shape, so this crossfades
+     between them rather than morphing one into the other. */
+  transition: opacity 160ms ease;
+}
+
+.icon-stack .icon-fill {
+  opacity: 0;
+}
+
+/* Spec quirk kept faithfully: the sun glyph sits on the 20 tier of the icon
+   scale while the moon stays on 24 (measured in the DarkClock frame). */
+#theme-switch .icon-stack .ph-sun {
+  font-size: 20px;
+}
+
+.icon-btn[aria-pressed="true"] .icon-stack .icon-thin {
+  opacity: 0;
+}
+
+.icon-btn[aria-pressed="true"] .icon-stack .icon-fill {
+  opacity: 1;
+}
+
+/* Active theme button: reuses Icon/Default/Default (your "icons" rule);
+   the highlight itself is now the sliding .switch-indicator, not a
+   per-button background. */
+.icon-btn[aria-pressed="true"] {
+  color: var(--sds-color-icon-default-default);
+}
+
+/* ponytail: revert-point -- .icon-btn interactive states (all icon buttons:
+   theme, stack arrows, shape, eye, trash). Tertiary idle -> default hover,
+   color-only, no background shifts. */
+.icon-btn:hover {
+  color: var(--sds-color-icon-default-default);
+}
+
+.icon-btn.danger:hover {
+  color: var(--sds-color-icon-danger-on-danger);
+}
+
+.icon-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+  pointer-events: none;
+}
+
+
+/* ==============================================================================
+   SQUIRCLE CORNERS (progressive enhancement)
+
+   corner-shape is declared exactly once, here, for every element that wants
+   it -- nowhere else in this file. Browsers without support for it simply
+   never receive the property at all (rather than receiving it and silently
+   ignoring it), and border-radius everywhere above already halves itself
+   via --radius-multiplier in that case (see :root at the top of this file).
+   To add the squircle effect to a new element: give it a border-radius
+   written as calc(Npx * var(--radius-multiplier)) up above, then add its
+   selector to the list below.
+   ============================================================================== */
+@supports (corner-shape: superellipse(2)) {
+  #sidebar,
+  #sidebar[data-state="collapsed"],
+  #sidebar[data-state="expanded"],
+  #theme-switch,
+  .collapse-btn,
+  .switch-indicator,
+  .icon-btn,
+  .setting-row,
+  .toggle,
+  .toggle-knob,
+  .stepper,
+  .segmented,
+  .segmented-btn,
+  .clock-context-menu .tz-input,
+  .tz-options,
+  .tz-options li,
+  .clock-context-menu,
+  .clock-switch {
+    corner-shape: superellipse(2);
+  }
+}
+
+/* ==============================================================================
+   SCROLLBARS
+
+   Thin, rounded, minimal -- applied to every scrolling area in the project
+   (#sidebar-body, #clocksList, .tz-options) from this one place rather than
+   repeating it per file. Firefox uses the standard scrollbar-color/-width
+   properties; everything WebKit/Blink-based (Chrome, Safari, Edge) uses the
+   ::-webkit-scrollbar family instead, since that's still not covered by the
+   standard properties in those engines.
+   ============================================================================== */
+#sidebar-body,
+#clocksList,
+.tz-options {
+  scrollbar-width: thin;
+  scrollbar-color: var(--sds-color-border-default-default) transparent;
+}
+
+#sidebar-body::-webkit-scrollbar,
+#clocksList::-webkit-scrollbar,
+.tz-options::-webkit-scrollbar {
+  width: 8px;
+}
+
+#sidebar-body::-webkit-scrollbar-track,
+#clocksList::-webkit-scrollbar-track,
+.tz-options::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#sidebar-body::-webkit-scrollbar-thumb,
+#clocksList::-webkit-scrollbar-thumb,
+.tz-options::-webkit-scrollbar-thumb {
+  background-color: var(--sds-color-border-default-default);
+  border-radius: 8px;
+  /* Transparent border + padding-box clip is what makes the thumb render
+     narrower than the full scrollbar track width, with a small gap on
+     either side -- the usual "thin pill floating in the track" look,
+     rather than a thumb that fills the track edge-to-edge. */
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+#sidebar-body::-webkit-scrollbar-thumb:hover,
+#clocksList::-webkit-scrollbar-thumb:hover,
+.tz-options::-webkit-scrollbar-thumb:hover {
+  background-color: var(--sds-color-icon-default-tertiary);
+}

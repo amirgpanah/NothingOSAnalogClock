@@ -1,0 +1,356 @@
+/* ==========================================================================
+   SEMANTIC COLOR TOKENS (Tier 1)
+   Every value here is an alias to a Tier-0 primitive (color.primitives.css) --
+   never a raw hex. This file is the ONLY place "light" and "dark" are defined;
+   component CSS should never check the theme itself, only consume these names.
+   Generated from: SDS_Light_tokens.json, SDS_Dark_tokens.json
+   ========================================================================== */
+html[data-theme="light"] {
+  /* --- Background --- */
+  /* --- Default --- */
+  --sds-color-background-default-default: var(--sds-color-white-1000);  /* Background/Default/Default -> White/1000 */
+  --sds-color-background-default-default-hover: var(--sds-color-gray-100);  /* Background/Default/Default Hover -> Gray/100 */
+  --sds-color-background-default-secondary: var(--sds-color-gray-100);  /* Background/Default/Secondary -> Gray/100 */
+  --sds-color-background-default-secondary-hover: var(--sds-color-gray-200);  /* Background/Default/Secondary Hover -> Gray/200 */
+  --sds-color-background-default-tertiary: var(--sds-color-gray-300);  /* Background/Default/Tertiary -> Gray/300 */
+  --sds-color-background-default-tertiary-hover: var(--sds-color-gray-400);  /* Background/Default/Tertiary Hover -> Gray/400 */
+  /* --- Neutral --- */
+  --sds-color-background-neutral-default: var(--sds-color-slate-700);  /* Background/Neutral/Default -> Slate/700 */
+  --sds-color-background-neutral-hover: var(--sds-color-slate-800);  /* Background/Neutral/Hover -> Slate/800 */
+  --sds-color-background-neutral-secondary: var(--sds-color-slate-300);  /* Background/Neutral/Secondary -> Slate/300 */
+  --sds-color-background-neutral-secondary-hover: var(--sds-color-slate-400);  /* Background/Neutral/Secondary Hover -> Slate/400 */
+  --sds-color-background-neutral-tertiary: var(--sds-color-slate-200);  /* Background/Neutral/Tertiary -> Slate/200 */
+  --sds-color-background-neutral-tertiary-hover: var(--sds-color-slate-300);  /* Background/Neutral/Tertiary Hover -> Slate/300 */
+  /* --- Brand --- */
+  --sds-color-background-brand-default: var(--sds-color-brand-800);  /* Background/Brand/Default -> Brand/800 */
+  --sds-color-background-brand-hover: var(--sds-color-brand-900);  /* Background/Brand/Hover -> Brand/900 */
+  --sds-color-background-brand-secondary: var(--sds-color-brand-200);  /* Background/Brand/Secondary -> Brand/200 */
+  --sds-color-background-brand-secondary-hover: var(--sds-color-brand-300);  /* Background/Brand/Secondary Hover -> Brand/300 */
+  --sds-color-background-brand-tertiary: var(--sds-color-brand-100);  /* Background/Brand/Tertiary -> Brand/100 */
+  --sds-color-background-brand-tertiary-hover: var(--sds-color-brand-200);  /* Background/Brand/Tertiary Hover -> Brand/200 */
+  /* --- Positive --- */
+  --sds-color-background-positive-default: var(--sds-color-green-500);  /* Background/Positive/Default -> Green/500 */
+  --sds-color-background-positive-hover: var(--sds-color-green-600);  /* Background/Positive/Hover -> Green/600 */
+  --sds-color-background-positive-secondary: var(--sds-color-green-200);  /* Background/Positive/Secondary -> Green/200 */
+  --sds-color-background-positive-secondary-hover: var(--sds-color-green-300);  /* Background/Positive/Secondary Hover -> Green/300 */
+  --sds-color-background-positive-tertiary: var(--sds-color-green-100);  /* Background/Positive/Tertiary -> Green/100 */
+  --sds-color-background-positive-tertiary-hover: var(--sds-color-green-200);  /* Background/Positive/Tertiary Hover -> Green/200 */
+  /* --- Warning --- */
+  --sds-color-background-warning-default: var(--sds-color-yellow-400);  /* Background/Warning/Default -> Yellow/400 */
+  --sds-color-background-warning-hover: var(--sds-color-yellow-500);  /* Background/Warning/Hover -> Yellow/500 */
+  --sds-color-background-warning-secondary: var(--sds-color-yellow-200);  /* Background/Warning/Secondary -> Yellow/200 */
+  --sds-color-background-warning-secondary-hover: var(--sds-color-yellow-300);  /* Background/Warning/Secondary Hover -> Yellow/300 */
+  --sds-color-background-warning-tertiary: var(--sds-color-yellow-100);  /* Background/Warning/Tertiary -> Yellow/100 */
+  --sds-color-background-warning-tertiary-hover: var(--sds-color-yellow-200);  /* Background/Warning/Tertiary Hover -> Yellow/200 */
+  /* --- Danger --- */
+  --sds-color-background-danger-default: var(--sds-color-red-500);  /* Background/Danger/Default -> Red/500 */
+  --sds-color-background-danger-hover: var(--sds-color-red-600);  /* Background/Danger/Hover -> Red/600 */
+  --sds-color-background-danger-secondary: var(--sds-color-red-200);  /* Background/Danger/Secondary -> Red/200 */
+  --sds-color-background-danger-secondary-hover: var(--sds-color-red-300);  /* Background/Danger/Secondary Hover -> Red/300 */
+  --sds-color-background-danger-tertiary: var(--sds-color-red-100);  /* Background/Danger/Tertiary -> Red/100 */
+  --sds-color-background-danger-tertiary-hover: var(--sds-color-red-200);  /* Background/Danger/Tertiary Hover -> Red/200 */
+  /* --- Disabled --- */
+  --sds-color-background-disabled-default: var(--sds-color-gray-300);  /* Background/Disabled/Default -> Gray/300 */
+  /* --- Utilities --- */
+  --sds-color-background-utilities-scrim: #FFFFFF;  /* Background/Utilities/Scrim */
+  --sds-color-background-utilities-blanket: #000000;  /* Background/Utilities/Blanket */
+  --sds-color-background-utilities-overlay: #000000;  /* Background/Utilities/Overlay */
+  --sds-color-background-utilities-measurement: var(--sds-color-pink-200);  /* Background/Utilities/Measurement -> Pink/200 */
+  /* --- Text --- */
+  /* --- Default --- */
+  --sds-color-text-default-default: var(--sds-color-gray-900);  /* Text/Default/Default -> Gray/900 */
+  --sds-color-text-default-secondary: var(--sds-color-gray-500);  /* Text/Default/Secondary -> Gray/500 */
+  --sds-color-text-default-tertiary: var(--sds-color-gray-400);  /* Text/Default/Tertiary -> Gray/400 */
+  /* --- Neutral --- */
+  --sds-color-text-neutral-default: var(--sds-color-slate-900);  /* Text/Neutral/Default -> Slate/900 */
+  --sds-color-text-neutral-secondary: var(--sds-color-slate-700);  /* Text/Neutral/Secondary -> Slate/700 */
+  --sds-color-text-neutral-tertiary: var(--sds-color-slate-600);  /* Text/Neutral/Tertiary -> Slate/600 */
+  --sds-color-text-neutral-on-neutral: var(--sds-color-slate-100);  /* Text/Neutral/On Neutral -> Slate/100 */
+  --sds-color-text-neutral-on-neutral-secondary: var(--sds-color-slate-900);  /* Text/Neutral/On Neutral Secondary -> Slate/900 */
+  --sds-color-text-neutral-on-neutral-tertiary: var(--sds-color-slate-800);  /* Text/Neutral/On Neutral Tertiary -> Slate/800 */
+  /* --- Brand --- */
+  --sds-color-text-brand-default: var(--sds-color-brand-800);  /* Text/Brand/Default -> Brand/800 */
+  --sds-color-text-brand-secondary: var(--sds-color-brand-600);  /* Text/Brand/Secondary -> Brand/600 */
+  --sds-color-text-brand-tertiary: var(--sds-color-brand-500);  /* Text/Brand/Tertiary -> Brand/500 */
+  --sds-color-text-brand-on-brand: var(--sds-color-brand-100);  /* Text/Brand/On Brand -> Brand/100 */
+  --sds-color-text-brand-on-brand-secondary: var(--sds-color-brand-900);  /* Text/Brand/On Brand Secondary -> Brand/900 */
+  --sds-color-text-brand-on-brand-tertiary: var(--sds-color-brand-800);  /* Text/Brand/On Brand Tertiary -> Brand/800 */
+  /* --- Positive --- */
+  --sds-color-text-positive-default: var(--sds-color-green-800);  /* Text/Positive/Default -> Green/800 */
+  --sds-color-text-positive-secondary: var(--sds-color-green-600);  /* Text/Positive/Secondary -> Green/600 */
+  --sds-color-text-positive-tertiary: var(--sds-color-green-500);  /* Text/Positive/Tertiary -> Green/500 */
+  --sds-color-text-positive-on-positive: var(--sds-color-green-100);  /* Text/Positive/On Positive -> Green/100 */
+  --sds-color-text-positive-on-positive-secondary: var(--sds-color-green-800);  /* Text/Positive/On Positive Secondary -> Green/800 */
+  --sds-color-text-positive-on-positive-tertiary: var(--sds-color-green-800);  /* Text/Positive/On Positive Tertiary -> Green/800 */
+  /* --- Warning --- */
+  --sds-color-text-warning-default: var(--sds-color-yellow-900);  /* Text/Warning/Default -> Yellow/900 */
+  --sds-color-text-warning-secondary: var(--sds-color-yellow-700);  /* Text/Warning/Secondary -> Yellow/700 */
+  --sds-color-text-warning-tertiary: var(--sds-color-yellow-600);  /* Text/Warning/Tertiary -> Yellow/600 */
+  --sds-color-text-warning-on-warning: var(--sds-color-yellow-1000);  /* Text/Warning/On Warning -> Yellow/1000 */
+  --sds-color-text-warning-on-warning-secondary: var(--sds-color-yellow-800);  /* Text/Warning/On Warning Secondary -> Yellow/800 */
+  --sds-color-text-warning-on-warning-tertiary: var(--sds-color-yellow-900);  /* Text/Warning/On Warning Tertiary -> Yellow/900 */
+  /* --- Danger --- */
+  --sds-color-text-danger-default: var(--sds-color-red-700);  /* Text/Danger/Default -> Red/700 */
+  --sds-color-text-danger-secondary: var(--sds-color-red-600);  /* Text/Danger/Secondary -> Red/600 */
+  --sds-color-text-danger-tertiary: var(--sds-color-red-500);  /* Text/Danger/Tertiary -> Red/500 */
+  --sds-color-text-danger-on-danger: var(--sds-color-red-100);  /* Text/Danger/On Danger -> Red/100 */
+  --sds-color-text-danger-on-danger-secondary: var(--sds-color-red-700);  /* Text/Danger/On Danger Secondary -> Red/700 */
+  --sds-color-text-danger-on-danger-tertiary: var(--sds-color-red-700);  /* Text/Danger/On Danger Tertiary -> Red/700 */
+  /* --- Disabled --- */
+  --sds-color-text-disabled-default: var(--sds-color-gray-400);  /* Text/Disabled/Default -> Gray/400 */
+  --sds-color-text-disabled-on-disabled: var(--sds-color-gray-400);  /* Text/Disabled/On Disabled -> Gray/400 */
+  /* --- Utilities --- */
+  --sds-color-text-utilities-text-on-overlay: var(--sds-color-black-1000);  /* Text/Utilities/Text On Overlay -> Black/1000 */
+  --sds-color-text-utilities-text-on-measurement: var(--sds-color-pink-800);  /* Text/Utilities/Text On Measurement -> Pink/800 */
+  /* --- Border --- */
+  /* --- Default --- */
+  --sds-color-border-default-default: var(--sds-color-gray-300);  /* Border/Default/Default -> Gray/300 */
+  --sds-color-border-default-secondary: var(--sds-color-gray-500);  /* Border/Default/Secondary -> Gray/500 */
+  --sds-color-border-default-tertiary: var(--sds-color-gray-700);  /* Border/Default/tertiary -> Gray/700 */
+  /* --- Neutral --- */
+  --sds-color-border-neutral-default: var(--sds-color-slate-900);  /* Border/Neutral/Default -> Slate/900 */
+  --sds-color-border-neutral-secondary: var(--sds-color-slate-600);  /* Border/Neutral/Secondary -> Slate/600 */
+  --sds-color-border-neutral-tertiary: var(--sds-color-slate-400);  /* Border/Neutral/tertiary -> Slate/400 */
+  /* --- Brand --- */
+  --sds-color-border-brand-default: var(--sds-color-brand-800);  /* Border/Brand/Default -> Brand/800 */
+  --sds-color-border-brand-secondary: var(--sds-color-brand-600);  /* Border/Brand/Secondary -> Brand/600 */
+  --sds-color-border-brand-tertiary: var(--sds-color-brand-500);  /* Border/Brand/Tertiary -> Brand/500 */
+  /* --- Positive --- */
+  --sds-color-border-positive-default: var(--sds-color-green-800);  /* Border/Positive/Default -> Green/800 */
+  --sds-color-border-positive-secondary: var(--sds-color-green-600);  /* Border/Positive/Secondary -> Green/600 */
+  --sds-color-border-positive-tertiary: var(--sds-color-green-500);  /* Border/Positive/tertiary -> Green/500 */
+  /* --- Warning --- */
+  --sds-color-border-warning-default: var(--sds-color-yellow-900);  /* Border/Warning/Default -> Yellow/900 */
+  --sds-color-border-warning-secondary: var(--sds-color-yellow-700);  /* Border/Warning/Secondary -> Yellow/700 */
+  --sds-color-border-warning-tertiary: var(--sds-color-yellow-600);  /* Border/Warning/tertiary -> Yellow/600 */
+  /* --- Danger --- */
+  --sds-color-border-danger-default: var(--sds-color-red-700);  /* Border/Danger/Default -> Red/700 */
+  --sds-color-border-danger-secondary: var(--sds-color-red-600);  /* Border/Danger/Secondary -> Red/600 */
+  --sds-color-border-danger-tertiary: var(--sds-color-red-500);  /* Border/Danger/Tertiary -> Red/500 */
+  /* --- Disabled --- */
+  --sds-color-border-disabled-default: var(--sds-color-gray-400);  /* Border/Disabled/default -> Gray/400 */
+  /* --- Utilities --- */
+  --sds-color-border-utilities-measurement: var(--sds-color-pink-400);  /* Border/Utilities/Measurement -> Pink/400 */
+  --sds-color-border-utilities-swatch: #000000;  /* Border/Utilities/Swatch */
+  /* --- Icon --- */
+  /* --- Default --- */
+  --sds-color-icon-default-default: var(--sds-color-gray-900);  /* Icon/Default/Default -> Gray/900 */
+  --sds-color-icon-default-secondary: var(--sds-color-gray-500);  /* Icon/Default/Secondary -> Gray/500 */
+  --sds-color-icon-default-tertiary: var(--sds-color-gray-400);  /* Icon/Default/Tertiary -> Gray/400 */
+  /* --- Neutral --- */
+  --sds-color-icon-neutral-default: var(--sds-color-slate-900);  /* Icon/Neutral/Default -> Slate/900 */
+  --sds-color-icon-neutral-secondary: var(--sds-color-slate-700);  /* Icon/Neutral/Secondary -> Slate/700 */
+  --sds-color-icon-neutral-tertiary: var(--sds-color-slate-600);  /* Icon/Neutral/Tertiary -> Slate/600 */
+  --sds-color-icon-neutral-on-neutral: var(--sds-color-slate-100);  /* Icon/Neutral/On Neutral -> Slate/100 */
+  --sds-color-icon-neutral-on-neutral-secondary: var(--sds-color-slate-900);  /* Icon/Neutral/On Neutral Secondary -> Slate/900 */
+  --sds-color-icon-neutral-on-neutral-tertiary: var(--sds-color-slate-800);  /* Icon/Neutral/On Neutral Tertiary -> Slate/800 */
+  /* --- Brand --- */
+  --sds-color-icon-brand-default: var(--sds-color-brand-800);  /* Icon/Brand/Default -> Brand/800 */
+  --sds-color-icon-brand-secondary: var(--sds-color-brand-600);  /* Icon/Brand/Secondary -> Brand/600 */
+  --sds-color-icon-brand-tertiary: var(--sds-color-brand-500);  /* Icon/Brand/Tertiary -> Brand/500 */
+  --sds-color-icon-brand-on-brand: var(--sds-color-brand-100);  /* Icon/Brand/On Brand -> Brand/100 */
+  --sds-color-icon-brand-on-brand-secondary: var(--sds-color-brand-900);  /* Icon/Brand/On Brand Secondary -> Brand/900 */
+  --sds-color-icon-brand-on-brand-tertiary: var(--sds-color-brand-800);  /* Icon/Brand/On Brand Tertiary -> Brand/800 */
+  /* --- Positive --- */
+  --sds-color-icon-positive-default: var(--sds-color-green-800);  /* Icon/Positive/Default -> Green/800 */
+  --sds-color-icon-positive-secondary: var(--sds-color-green-600);  /* Icon/Positive/Secondary -> Green/600 */
+  --sds-color-icon-positive-tertiary: var(--sds-color-green-500);  /* Icon/Positive/Tertiary -> Green/500 */
+  --sds-color-icon-positive-on-positive: var(--sds-color-green-100);  /* Icon/Positive/On Positive -> Green/100 */
+  --sds-color-icon-positive-on-positive-secondary: var(--sds-color-green-800);  /* Icon/Positive/On Positive Secondary -> Green/800 */
+  --sds-color-icon-positive-on-positive-tertiary: var(--sds-color-green-900);  /* Icon/Positive/On Positive Tertiary -> Green/900 */
+  /* --- Warning --- */
+  --sds-color-icon-warning-default: var(--sds-color-yellow-900);  /* Icon/Warning/Default -> Yellow/900 */
+  --sds-color-icon-warning-secondary: var(--sds-color-yellow-700);  /* Icon/Warning/Secondary -> Yellow/700 */
+  --sds-color-icon-warning-tertiary: var(--sds-color-yellow-600);  /* Icon/Warning/Tertiary -> Yellow/600 */
+  --sds-color-icon-warning-on-warning: var(--sds-color-yellow-1000);  /* Icon/Warning/On Warning -> Yellow/1000 */
+  --sds-color-icon-warning-on-warning-secondary: var(--sds-color-yellow-800);  /* Icon/Warning/On Warning Secondary -> Yellow/800 */
+  --sds-color-icon-warning-on-warning-tertiary: var(--sds-color-yellow-900);  /* Icon/Warning/On Warning Tertiary -> Yellow/900 */
+  /* --- Danger --- */
+  --sds-color-icon-danger-default: var(--sds-color-red-700);  /* Icon/Danger/Default -> Red/700 */
+  --sds-color-icon-danger-secondary: var(--sds-color-red-600);  /* Icon/Danger/Secondary -> Red/600 */
+  --sds-color-icon-danger-tertiary: var(--sds-color-red-500);  /* Icon/Danger/Tertiary -> Red/500 */
+  --sds-color-icon-danger-on-danger: var(--sds-color-red-100);  /* Icon/Danger/On Danger -> Red/100 */
+  --sds-color-icon-danger-on-danger-secondary: var(--sds-color-red-700);  /* Icon/Danger/On Danger Secondary -> Red/700 */
+  --sds-color-icon-danger-on-danger-tertiary: var(--sds-color-red-700);  /* Icon/Danger/On Danger Tertiary -> Red/700 */
+  /* --- Disabled --- */
+  --sds-color-icon-disabled-default: var(--sds-color-gray-400);  /* Icon/Disabled/Default -> Gray/400 */
+  --sds-color-icon-disabled-on-disabled: var(--sds-color-gray-400);  /* Icon/Disabled/On Disabled -> Gray/400 */
+  /* --- Utilities --- */
+  --sds-color-icon-utilities-icon: var(--sds-color-pink-600);  /* Icon/Utilities/Icon -> Pink/600 */
+  --sds-color-icon-utilities-icon-on-measurement: var(--sds-color-pink-800);  /* Icon/Utilities/Icon On Measurement -> Pink/800 */
+}
+
+html[data-theme="dark"] {
+  /* --- Background --- */
+  /* --- Default --- */
+  --sds-color-background-default-default: var(--sds-color-gray-900);  /* Background/Default/Default -> Gray/900 */
+  --sds-color-background-default-default-hover: var(--sds-color-gray-700);  /* Background/Default/Default Hover -> Gray/700 */
+  --sds-color-background-default-secondary: var(--sds-color-gray-800);  /* Background/Default/Secondary -> Gray/800 */
+  --sds-color-background-default-secondary-hover: var(--sds-color-gray-900);  /* Background/Default/Secondary Hover -> Gray/900 */
+  --sds-color-background-default-tertiary: var(--sds-color-gray-600);  /* Background/Default/Tertiary -> Gray/600 */
+  --sds-color-background-default-tertiary-hover: var(--sds-color-gray-700);  /* Background/Default/Tertiary Hover -> Gray/700 */
+  /* --- Neutral --- */
+  --sds-color-background-neutral-default: var(--sds-color-slate-400);  /* Background/Neutral/Default -> Slate/400 */
+  --sds-color-background-neutral-hover: var(--sds-color-slate-500);  /* Background/Neutral/Hover -> Slate/500 */
+  --sds-color-background-neutral-secondary: var(--sds-color-slate-900);  /* Background/Neutral/Secondary -> Slate/900 */
+  --sds-color-background-neutral-secondary-hover: var(--sds-color-slate-1000);  /* Background/Neutral/Secondary Hover -> Slate/1000 */
+  --sds-color-background-neutral-tertiary: var(--sds-color-slate-900);  /* Background/Neutral/Tertiary -> Slate/900 */
+  --sds-color-background-neutral-tertiary-hover: var(--sds-color-slate-1000);  /* Background/Neutral/Tertiary Hover -> Slate/1000 */
+  /* --- Brand --- */
+  --sds-color-background-brand-default: var(--sds-color-brand-100);  /* Background/Brand/Default -> Brand/100 */
+  --sds-color-background-brand-hover: var(--sds-color-brand-300);  /* Background/Brand/Hover -> Brand/300 */
+  --sds-color-background-brand-secondary: var(--sds-color-brand-600);  /* Background/Brand/Secondary -> Brand/600 */
+  --sds-color-background-brand-secondary-hover: var(--sds-color-brand-500);  /* Background/Brand/Secondary Hover -> Brand/500 */
+  --sds-color-background-brand-tertiary: var(--sds-color-brand-600);  /* Background/Brand/Tertiary -> Brand/600 */
+  --sds-color-background-brand-tertiary-hover: var(--sds-color-brand-800);  /* Background/Brand/Tertiary Hover -> Brand/800 */
+  /* --- Positive --- */
+  --sds-color-background-positive-default: var(--sds-color-green-700);  /* Background/Positive/Default -> Green/700 */
+  --sds-color-background-positive-hover: var(--sds-color-green-800);  /* Background/Positive/Hover -> Green/800 */
+  --sds-color-background-positive-secondary: var(--sds-color-green-800);  /* Background/Positive/Secondary -> Green/800 */
+  --sds-color-background-positive-secondary-hover: var(--sds-color-green-900);  /* Background/Positive/Secondary Hover -> Green/900 */
+  --sds-color-background-positive-tertiary: var(--sds-color-green-900);  /* Background/Positive/Tertiary -> Green/900 */
+  --sds-color-background-positive-tertiary-hover: var(--sds-color-green-1000);  /* Background/Positive/Tertiary Hover -> Green/1000 */
+  /* --- Warning --- */
+  --sds-color-background-warning-default: var(--sds-color-yellow-400);  /* Background/Warning/Default -> Yellow/400 */
+  --sds-color-background-warning-hover: var(--sds-color-yellow-500);  /* Background/Warning/Hover -> Yellow/500 */
+  --sds-color-background-warning-secondary: var(--sds-color-yellow-800);  /* Background/Warning/Secondary -> Yellow/800 */
+  --sds-color-background-warning-secondary-hover: var(--sds-color-yellow-900);  /* Background/Warning/Secondary Hover -> Yellow/900 */
+  --sds-color-background-warning-tertiary: var(--sds-color-yellow-900);  /* Background/Warning/Tertiary -> Yellow/900 */
+  --sds-color-background-warning-tertiary-hover: var(--sds-color-yellow-1000);  /* Background/Warning/Tertiary Hover -> Yellow/1000 */
+  /* --- Danger --- */
+  --sds-color-background-danger-default: var(--sds-color-red-600);  /* Background/Danger/Default -> Red/600 */
+  --sds-color-background-danger-hover: var(--sds-color-red-700);  /* Background/Danger/Hover -> Red/700 */
+  --sds-color-background-danger-secondary: var(--sds-color-red-800);  /* Background/Danger/Secondary -> Red/800 */
+  --sds-color-background-danger-secondary-hover: var(--sds-color-red-900);  /* Background/Danger/Secondary Hover -> Red/900 */
+  --sds-color-background-danger-tertiary: var(--sds-color-red-900);  /* Background/Danger/Tertiary -> Red/900 */
+  --sds-color-background-danger-tertiary-hover: var(--sds-color-red-1000);  /* Background/Danger/Tertiary Hover -> Red/1000 */
+  /* --- Disabled --- */
+  --sds-color-background-disabled-default: var(--sds-color-gray-700);  /* Background/Disabled/Default -> Gray/700 */
+  /* --- Utilities --- */
+  --sds-color-background-utilities-scrim: #000000;  /* Background/Utilities/Scrim */
+  --sds-color-background-utilities-blanket: #000000;  /* Background/Utilities/Blanket */
+  --sds-color-background-utilities-overlay: #000000;  /* Background/Utilities/Overlay */
+  --sds-color-background-utilities-measurement: var(--sds-color-pink-800);  /* Background/Utilities/Measurement -> Pink/800 */
+  /* --- Text --- */
+  /* --- Default --- */
+  --sds-color-text-default-default: var(--sds-color-white-1000);  /* Text/Default/Default -> White/1000 */
+  --sds-color-text-default-secondary: var(--sds-color-white-500);  /* Text/Default/Secondary -> White/500 */
+  --sds-color-text-default-tertiary: var(--sds-color-white-400);  /* Text/Default/Tertiary -> White/400 */
+  /* --- Neutral --- */
+  --sds-color-text-neutral-default: var(--sds-color-slate-200);  /* Text/Neutral/Default -> Slate/200 */
+  --sds-color-text-neutral-secondary: var(--sds-color-slate-300);  /* Text/Neutral/Secondary -> Slate/300 */
+  --sds-color-text-neutral-tertiary: var(--sds-color-slate-400);  /* Text/Neutral/Tertiary -> Slate/400 */
+  --sds-color-text-neutral-on-neutral: var(--sds-color-slate-1000);  /* Text/Neutral/On Neutral -> Slate/1000 */
+  --sds-color-text-neutral-on-neutral-secondary: var(--sds-color-slate-100);  /* Text/Neutral/On Neutral Secondary -> Slate/100 */
+  --sds-color-text-neutral-on-neutral-tertiary: var(--sds-color-slate-100);  /* Text/Neutral/On Neutral Tertiary -> Slate/100 */
+  /* --- Brand --- */
+  --sds-color-text-brand-default: var(--sds-color-brand-100);  /* Text/Brand/Default -> Brand/100 */
+  --sds-color-text-brand-secondary: var(--sds-color-brand-300);  /* Text/Brand/Secondary -> Brand/300 */
+  --sds-color-text-brand-tertiary: var(--sds-color-brand-400);  /* Text/Brand/Tertiary -> Brand/400 */
+  --sds-color-text-brand-on-brand: var(--sds-color-brand-900);  /* Text/Brand/On Brand -> Brand/900 */
+  --sds-color-text-brand-on-brand-secondary: var(--sds-color-brand-100);  /* Text/Brand/On Brand Secondary -> Brand/100 */
+  --sds-color-text-brand-on-brand-tertiary: var(--sds-color-brand-100);  /* Text/Brand/On Brand Tertiary -> Brand/100 */
+  /* --- Positive --- */
+  --sds-color-text-positive-default: var(--sds-color-green-200);  /* Text/Positive/Default -> Green/200 */
+  --sds-color-text-positive-secondary: var(--sds-color-green-400);  /* Text/Positive/Secondary -> Green/400 */
+  --sds-color-text-positive-tertiary: var(--sds-color-green-600);  /* Text/Positive/Tertiary -> Green/600 */
+  --sds-color-text-positive-on-positive: var(--sds-color-green-100);  /* Text/Positive/On Positive -> Green/100 */
+  --sds-color-text-positive-on-positive-secondary: var(--sds-color-green-100);  /* Text/Positive/On Positive Secondary -> Green/100 */
+  --sds-color-text-positive-on-positive-tertiary: var(--sds-color-green-100);  /* Text/Positive/On Positive Tertiary -> Green/100 */
+  /* --- Warning --- */
+  --sds-color-text-warning-default: var(--sds-color-yellow-200);  /* Text/Warning/Default -> Yellow/200 */
+  --sds-color-text-warning-secondary: var(--sds-color-yellow-400);  /* Text/Warning/Secondary -> Yellow/400 */
+  --sds-color-text-warning-tertiary: var(--sds-color-yellow-600);  /* Text/Warning/Tertiary -> Yellow/600 */
+  --sds-color-text-warning-on-warning: var(--sds-color-yellow-1000);  /* Text/Warning/On Warning -> Yellow/1000 */
+  --sds-color-text-warning-on-warning-secondary: var(--sds-color-yellow-100);  /* Text/Warning/On Warning Secondary -> Yellow/100 */
+  --sds-color-text-warning-on-warning-tertiary: var(--sds-color-yellow-100);  /* Text/Warning/On Warning Tertiary -> Yellow/100 */
+  /* --- Danger --- */
+  --sds-color-text-danger-default: var(--sds-color-red-200);  /* Text/Danger/Default -> Red/200 */
+  --sds-color-text-danger-secondary: var(--sds-color-red-400);  /* Text/Danger/Secondary -> Red/400 */
+  --sds-color-text-danger-tertiary: var(--sds-color-red-500);  /* Text/Danger/Tertiary -> Red/500 */
+  --sds-color-text-danger-on-danger: var(--sds-color-red-100);  /* Text/Danger/On Danger -> Red/100 */
+  --sds-color-text-danger-on-danger-secondary: var(--sds-color-red-100);  /* Text/Danger/On Danger Secondary -> Red/100 */
+  --sds-color-text-danger-on-danger-tertiary: var(--sds-color-red-100);  /* Text/Danger/On Danger Tertiary -> Red/100 */
+  /* --- Disabled --- */
+  --sds-color-text-disabled-default: var(--sds-color-gray-500);  /* Text/Disabled/Default -> Gray/500 */
+  --sds-color-text-disabled-on-disabled: var(--sds-color-gray-400);  /* Text/Disabled/On Disabled -> Gray/400 */
+  /* --- Utilities --- */
+  --sds-color-text-utilities-text-on-overlay: var(--sds-color-white-1000);  /* Text/Utilities/Text On Overlay -> White/1000 */
+  --sds-color-text-utilities-text-on-measurement: var(--sds-color-pink-200);  /* Text/Utilities/Text On Measurement -> Pink/200 */
+  /* --- Border --- */
+  /* --- Default --- */
+  --sds-color-border-default-default: var(--sds-color-gray-600);  /* Border/Default/Default -> Gray/600 */
+  --sds-color-border-default-secondary: var(--sds-color-gray-500);  /* Border/Default/Secondary -> Gray/500 */
+  --sds-color-border-default-tertiary: var(--sds-color-gray-400);  /* Border/Default/tertiary -> Gray/400 */
+  /* --- Neutral --- */
+  --sds-color-border-neutral-default: var(--sds-color-slate-100);  /* Border/Neutral/Default -> Slate/100 */
+  --sds-color-border-neutral-secondary: var(--sds-color-slate-500);  /* Border/Neutral/Secondary -> Slate/500 */
+  --sds-color-border-neutral-tertiary: var(--sds-color-slate-600);  /* Border/Neutral/tertiary -> Slate/600 */
+  /* --- Brand --- */
+  --sds-color-border-brand-default: var(--sds-color-brand-100);  /* Border/Brand/Default -> Brand/100 */
+  --sds-color-border-brand-secondary: var(--sds-color-brand-300);  /* Border/Brand/Secondary -> Brand/300 */
+  --sds-color-border-brand-tertiary: var(--sds-color-brand-400);  /* Border/Brand/Tertiary -> Brand/400 */
+  /* --- Positive --- */
+  --sds-color-border-positive-default: var(--sds-color-green-200);  /* Border/Positive/Default -> Green/200 */
+  --sds-color-border-positive-secondary: var(--sds-color-green-400);  /* Border/Positive/Secondary -> Green/400 */
+  --sds-color-border-positive-tertiary: var(--sds-color-green-600);  /* Border/Positive/tertiary -> Green/600 */
+  /* --- Warning --- */
+  --sds-color-border-warning-default: var(--sds-color-yellow-200);  /* Border/Warning/Default -> Yellow/200 */
+  --sds-color-border-warning-secondary: var(--sds-color-yellow-400);  /* Border/Warning/Secondary -> Yellow/400 */
+  --sds-color-border-warning-tertiary: var(--sds-color-yellow-600);  /* Border/Warning/tertiary -> Yellow/600 */
+  /* --- Danger --- */
+  --sds-color-border-danger-default: var(--sds-color-red-200);  /* Border/Danger/Default -> Red/200 */
+  --sds-color-border-danger-secondary: var(--sds-color-red-400);  /* Border/Danger/Secondary -> Red/400 */
+  --sds-color-border-danger-tertiary: var(--sds-color-red-500);  /* Border/Danger/Tertiary -> Red/500 */
+  /* --- Disabled --- */
+  --sds-color-border-disabled-default: var(--sds-color-gray-600);  /* Border/Disabled/default -> Gray/600 */
+  /* --- Utilities --- */
+  --sds-color-border-utilities-measurement: var(--sds-color-pink-600);  /* Border/Utilities/Measurement -> Pink/600 */
+  --sds-color-border-utilities-swatch: #FFFFFF;  /* Border/Utilities/Swatch */
+  /* --- Icon --- */
+  /* --- Default --- */
+  --sds-color-icon-default-default: var(--sds-color-white-1000);  /* Icon/Default/Default -> White/1000 */
+  --sds-color-icon-default-secondary: var(--sds-color-white-500);  /* Icon/Default/Secondary -> White/500 */
+  --sds-color-icon-default-tertiary: var(--sds-color-white-400);  /* Icon/Default/Tertiary -> White/400 */
+  /* --- Neutral --- */
+  --sds-color-icon-neutral-default: var(--sds-color-slate-200);  /* Icon/Neutral/Default -> Slate/200 */
+  --sds-color-icon-neutral-secondary: var(--sds-color-slate-300);  /* Icon/Neutral/Secondary -> Slate/300 */
+  --sds-color-icon-neutral-tertiary: var(--sds-color-slate-400);  /* Icon/Neutral/Tertiary -> Slate/400 */
+  --sds-color-icon-neutral-on-neutral: var(--sds-color-slate-1000);  /* Icon/Neutral/On Neutral -> Slate/1000 */
+  --sds-color-icon-neutral-on-neutral-secondary: var(--sds-color-slate-100);  /* Icon/Neutral/On Neutral Secondary -> Slate/100 */
+  --sds-color-icon-neutral-on-neutral-tertiary: var(--sds-color-slate-100);  /* Icon/Neutral/On Neutral Tertiary -> Slate/100 */
+  /* --- Brand --- */
+  --sds-color-icon-brand-default: var(--sds-color-brand-100);  /* Icon/Brand/Default -> Brand/100 */
+  --sds-color-icon-brand-secondary: var(--sds-color-brand-300);  /* Icon/Brand/Secondary -> Brand/300 */
+  --sds-color-icon-brand-tertiary: var(--sds-color-brand-400);  /* Icon/Brand/Tertiary -> Brand/400 */
+  --sds-color-icon-brand-on-brand: var(--sds-color-brand-900);  /* Icon/Brand/On Brand -> Brand/900 */
+  --sds-color-icon-brand-on-brand-secondary: var(--sds-color-brand-100);  /* Icon/Brand/On Brand Secondary -> Brand/100 */
+  --sds-color-icon-brand-on-brand-tertiary: var(--sds-color-brand-100);  /* Icon/Brand/On Brand Tertiary -> Brand/100 */
+  /* --- Positive --- */
+  --sds-color-icon-positive-default: var(--sds-color-green-200);  /* Icon/Positive/Default -> Green/200 */
+  --sds-color-icon-positive-secondary: var(--sds-color-green-400);  /* Icon/Positive/Secondary -> Green/400 */
+  --sds-color-icon-positive-tertiary: var(--sds-color-green-600);  /* Icon/Positive/Tertiary -> Green/600 */
+  --sds-color-icon-positive-on-positive: var(--sds-color-green-100);  /* Icon/Positive/On Positive -> Green/100 */
+  --sds-color-icon-positive-on-positive-secondary: var(--sds-color-green-100);  /* Icon/Positive/On Positive Secondary -> Green/100 */
+  --sds-color-icon-positive-on-positive-tertiary: var(--sds-color-green-100);  /* Icon/Positive/On Positive Tertiary -> Green/100 */
+  /* --- Warning --- */
+  --sds-color-icon-warning-default: var(--sds-color-yellow-200);  /* Icon/Warning/Default -> Yellow/200 */
+  --sds-color-icon-warning-secondary: var(--sds-color-yellow-400);  /* Icon/Warning/Secondary -> Yellow/400 */
+  --sds-color-icon-warning-tertiary: var(--sds-color-yellow-600);  /* Icon/Warning/Tertiary -> Yellow/600 */
+  --sds-color-icon-warning-on-warning: var(--sds-color-yellow-1000);  /* Icon/Warning/On Warning -> Yellow/1000 */
+  --sds-color-icon-warning-on-warning-secondary: var(--sds-color-yellow-100);  /* Icon/Warning/On Warning Secondary -> Yellow/100 */
+  --sds-color-icon-warning-on-warning-tertiary: var(--sds-color-yellow-100);  /* Icon/Warning/On Warning Tertiary -> Yellow/100 */
+  /* --- Danger --- */
+  --sds-color-icon-danger-default: var(--sds-color-red-200);  /* Icon/Danger/Default -> Red/200 */
+  --sds-color-icon-danger-secondary: var(--sds-color-red-400);  /* Icon/Danger/Secondary -> Red/400 */
+  --sds-color-icon-danger-tertiary: var(--sds-color-red-500);  /* Icon/Danger/Tertiary -> Red/500 */
+  --sds-color-icon-danger-on-danger: var(--sds-color-red-100);  /* Icon/Danger/On Danger -> Red/100 */
+  --sds-color-icon-danger-on-danger-secondary: var(--sds-color-red-100);  /* Icon/Danger/On Danger Secondary -> Red/100 */
+  --sds-color-icon-danger-on-danger-tertiary: var(--sds-color-red-100);  /* Icon/Danger/On Danger Tertiary -> Red/100 */
+  /* --- Disabled --- */
+  --sds-color-icon-disabled-default: var(--sds-color-gray-500);  /* Icon/Disabled/Default -> Gray/500 */
+  --sds-color-icon-disabled-on-disabled: var(--sds-color-gray-400);  /* Icon/Disabled/On Disabled -> Gray/400 */
+  /* --- Utilities --- */
+  --sds-color-icon-utilities-icon: var(--sds-color-pink-400);  /* Icon/Utilities/Icon -> Pink/400 */
+  --sds-color-icon-utilities-icon-on-measurement: var(--sds-color-pink-200);  /* Icon/Utilities/Icon On Measurement -> Pink/200 */
+}

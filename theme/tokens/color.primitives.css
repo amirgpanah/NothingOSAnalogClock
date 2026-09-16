@@ -1,0 +1,118 @@
+/* ==========================================================================
+   COLOR PRIMITIVES (Tier 0)
+   Raw swatches only. No meaning assigned. NEVER reference these directly
+   from component CSS -- only semantic tokens (color.semantic.css) may.
+   Generated from: Value_tokens.json
+   ========================================================================== */
+:root {
+  /* Brand */
+  --sds-color-brand-100: #F5F5F5;  /* Brand/100 */
+  --sds-color-brand-200: #E6E6E6;  /* Brand/200 */
+  --sds-color-brand-300: #D9D9D9;  /* Brand/300 */
+  --sds-color-brand-400: #B3B3B3;  /* Brand/400 */
+  --sds-color-brand-500: #757575;  /* Brand/500 */
+  --sds-color-brand-600: #444444;  /* Brand/600 */
+  --sds-color-brand-700: #383838;  /* Brand/700 */
+  --sds-color-brand-800: #2C2C2C;  /* Brand/800 */
+  --sds-color-brand-900: #1E1E1E;  /* Brand/900 */
+  --sds-color-brand-1000: #111111;  /* Brand/1000 */
+  /* Black */
+  --sds-color-black-100: #0C0C0D0D;  /* Black/100 */
+  --sds-color-black-200: #0C0C0D1A;  /* Black/200 */
+  --sds-color-black-300: #0C0C0D33;  /* Black/300 */
+  --sds-color-black-400: #0C0C0D66;  /* Black/400 */
+  --sds-color-black-500: #0C0C0DB3;  /* Black/500 */
+  --sds-color-black-600: #0C0C0DCC;  /* Black/600 */
+  --sds-color-black-700: #0C0C0DD9;  /* Black/700 */
+  --sds-color-black-800: #0C0C0DE6;  /* Black/800 */
+  --sds-color-black-900: #0C0C0DF2;  /* Black/900 */
+  --sds-color-black-1000: #0C0C0D;  /* Black/1000 */
+  /* White */
+  --sds-color-white-100: #FFFFFF0D;  /* White/100 */
+  --sds-color-white-200: #FFFFFF1A;  /* White/200 */
+  --sds-color-white-300: #FFFFFF33;  /* White/300 */
+  --sds-color-white-400: #FFFFFF66;  /* White/400 */
+  --sds-color-white-500: #FFFFFFB3;  /* White/500 */
+  --sds-color-white-600: #FFFFFFCC;  /* White/600 */
+  --sds-color-white-700: #FFFFFFD9;  /* White/700 */
+  --sds-color-white-800: #FFFFFFE6;  /* White/800 */
+  --sds-color-white-900: #FFFFFFF2;  /* White/900 */
+  --sds-color-white-1000: #FFFFFF;  /* White/1000 */
+  /* Green */
+  --sds-color-green-100: #EBFFEE;  /* Green/100 */
+  --sds-color-green-200: #CFF7D3;  /* Green/200 */
+  --sds-color-green-300: #AFF4C6;  /* Green/300 */
+  --sds-color-green-400: #85E0A3;  /* Green/400 */
+  --sds-color-green-500: #14AE5C;  /* Green/500 */
+  --sds-color-green-600: #009951;  /* Green/600 */
+  --sds-color-green-700: #008043;  /* Green/700 */
+  --sds-color-green-800: #02542D;  /* Green/800 */
+  --sds-color-green-900: #024023;  /* Green/900 */
+  --sds-color-green-1000: #062D1B;  /* Green/1000 */
+  /* Gray */
+  --sds-color-gray-100: #F5F5F5;  /* Gray/100 */
+  --sds-color-gray-200: #E6E6E6;  /* Gray/200 */
+  --sds-color-gray-300: #D9D9D9;  /* Gray/300 */
+  --sds-color-gray-400: #B3B3B3;  /* Gray/400 */
+  --sds-color-gray-500: #757575;  /* Gray/500 */
+  --sds-color-gray-600: #444444;  /* Gray/600 */
+  --sds-color-gray-700: #383838;  /* Gray/700 */
+  --sds-color-gray-800: #2C2C2C;  /* Gray/800 */
+  --sds-color-gray-900: #1E1E1E;  /* Gray/900 */
+  --sds-color-gray-1000: #111111;  /* Gray/1000 */
+  /* Pink */
+  --sds-color-pink-100: #FCF1FD;  /* Pink/100 */
+  --sds-color-pink-200: #FAE1FA;  /* Pink/200 */
+  --sds-color-pink-300: #F5C0EF;  /* Pink/300 */
+  --sds-color-pink-400: #F19EDC;  /* Pink/400 */
+  --sds-color-pink-500: #EA3FB8;  /* Pink/500 */
+  --sds-color-pink-600: #D732A8;  /* Pink/600 */
+  --sds-color-pink-700: #BA2A92;  /* Pink/700 */
+  --sds-color-pink-800: #8A226F;  /* Pink/800 */
+  --sds-color-pink-900: #57184A;  /* Pink/900 */
+  --sds-color-pink-1000: #3F1536;  /* Pink/1000 */
+  /* Red */
+  --sds-color-red-100: #FEE9E7;  /* Red/100 */
+  --sds-color-red-200: #FDD3D0;  /* Red/200 */
+  --sds-color-red-300: #FCB3AD;  /* Red/300 */
+  --sds-color-red-400: #F4776A;  /* Red/400 */
+  --sds-color-red-500: #EC221F;  /* Red/500 */
+  --sds-color-red-600: #C00F0C;  /* Red/600 */
+  --sds-color-red-700: #900B09;  /* Red/700 */
+  --sds-color-red-800: #690807;  /* Red/800 */
+  --sds-color-red-900: #4D0B0A;  /* Red/900 */
+  --sds-color-red-1000: #300603;  /* Red/1000 */
+  /* Slate */
+  --sds-color-slate-100: #F3F3F3;  /* Slate/100 */
+  --sds-color-slate-200: #E3E3E3;  /* Slate/200 */
+  --sds-color-slate-300: #CDCDCD;  /* Slate/300 */
+  --sds-color-slate-400: #B2B2B2;  /* Slate/400 */
+  --sds-color-slate-500: #949494;  /* Slate/500 */
+  --sds-color-slate-600: #767676;  /* Slate/600 */
+  --sds-color-slate-700: #5A5A5A;  /* Slate/700 */
+  --sds-color-slate-800: #434343;  /* Slate/800 */
+  --sds-color-slate-900: #303030;  /* Slate/900 */
+  --sds-color-slate-1000: #242424;  /* Slate/1000 */
+  /* Yellow */
+  --sds-color-yellow-100: #FFFBEB;  /* Yellow/100 */
+  --sds-color-yellow-200: #FFF1C2;  /* Yellow/200 */
+  --sds-color-yellow-300: #FFE8A3;  /* Yellow/300 */
+  --sds-color-yellow-400: #E8B931;  /* Yellow/400 */
+  --sds-color-yellow-500: #E5A000;  /* Yellow/500 */
+  --sds-color-yellow-600: #BF6A02;  /* Yellow/600 */
+  --sds-color-yellow-700: #975102;  /* Yellow/700 */
+  --sds-color-yellow-800: #682D03;  /* Yellow/800 */
+  --sds-color-yellow-900: #522504;  /* Yellow/900 */
+  --sds-color-yellow-1000: #401B01;  /* Yellow/1000 */
+  /* Blue */
+  --sds-color-blue-100: #F1F6FD;  /* Blue/100 */
+  --sds-color-blue-200: #E1EBFA;  /* Blue/200 */
+  --sds-color-blue-300: #C0D4F5;  /* Blue/300 */
+  --sds-color-blue-400: #9EBEF1;  /* Blue/400 */
+  --sds-color-blue-500: #3F81EA;  /* Blue/500 */
+  --sds-color-blue-600: #3271D7;  /* Blue/600 */
+  --sds-color-blue-700: #2A61BA;  /* Blue/700 */
+  --sds-color-blue-800: #224A8A;  /* Blue/800 */
+  --sds-color-blue-900: #183057;  /* Blue/900 */
+  --sds-color-blue-1000: #15253F;  /* Blue/1000 */
+}

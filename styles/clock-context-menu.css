@@ -1,0 +1,248 @@
+/* ==============================================================================
+   PER-CLOCK CONTEXT MENU
+
+   The floating menu that appears below a hovered/tapped clock on the canvas
+   (stack-order arrows, timezone picker, shape switch, delete). This is NOT
+   sidebar content -- it doesn't live inside #sidebar and isn't positioned
+   relative to it (see positionContextMenu() in index.html) -- it just reuses
+   the same design tokens and the shared .icon-btn/.switch-indicator
+   components (components.css) for visual consistency with the sidebar.
+   ============================================================================== */
+
+/* ---------------- Per-clock context menu (floats below whichever clock is
+   hovered/tapped) ---------------- */
+.clock-context-menu {
+  /* position:fixed since this needs to be positioned in viewport
+     coordinates -- see positionContextMenu() in index.html, which sets
+     left/top directly and is the only thing that positions this element.
+     Nothing here should set left/top/transform, or it'll fight with that JS.
+
+     Width is 1/4 of viewport on desktop, 1/3 on tablet, full width minus
+     16px each side on mobile -- same breakpoint boundaries the sidebar
+     uses (1023px, 640px) for visual consistency, but these are this
+     menu's own numbers, not shared variables -- still nothing to do with
+     the sidebar itself (see the earlier note this replaced). Fixing the
+     menu's own total width is also what makes .tz-input's flex:1 width
+     deterministic instead of content-based -- see that rule below.
+
+     Hidden via visibility/opacity, NOT display:none: this box needs a real,
+     measurable width at all times (positionContextMenu reads menu.offsetWidth
+     directly), and display:none elements report 0 for that. */
+  position: fixed;
+  display: flex;
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  align-items: center;
+  gap: 4px;
+  width: 25vw;
+  border-radius: calc(24px * var(--radius-multiplier));
+  white-space: nowrap;
+  /* No box-shadow here on purpose: this element is a transparent layout
+     wrapper (no background of its own), so a container-level shadow just
+     draws a rectangular ghost around empty space. The elevation lives on
+     each discrete surface inside -- field, switch, buttons -- matching how
+     the DarkClock spec carries the recipe on individual frames. */
+  z-index: 50;
+  /* visibility is included so it flips to hidden only once the fade-out
+     finishes (browsers do this automatically when a property that isn't
+     smoothly interpolable, like visibility, is transitioned toward its
+     "off" value alongside one that is) -- otherwise it'd become
+     unclickable/untabbable a frame before it's actually done fading. */
+  transition:
+    opacity 180ms ease-in-out,
+    visibility 180ms ease-in-out;
+}
+
+@media (max-width: 1023px) {
+  .clock-context-menu {
+    width: 33.333vw;
+  }
+}
+
+@media (max-width: 640px) {
+  .clock-context-menu {
+    width: calc(100vw - 32px);
+  }
+}
+
+.clock:hover .clock-context-menu,
+.clock.show-handles .clock-context-menu {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.clock-context-menu .tz-input {
+  position: relative; /* anchors the absolutely-positioned .tz-options below it */
+  display: flex;
+  align-items: stretch;
+  height: 40px; /* explicit, not just stretch-derived -- box-sizing:border-box only absorbs a border within a size that's actually declared, an auto/content-derived height still grows by the border width regardless of box-sizing */
+  /* flex:1 fills whatever's left in the row after the fixed-size arrows/
+     switch/delete buttons -- that's deterministic now (not content-based)
+     because .clock-context-menu itself has a fixed width per breakpoint
+     (see below), so this box's width only ever changes with viewport size,
+     never with which timezone is showing. min-width:0 lets it actually
+     shrink below its content's natural size so .tz-value's ellipsis (below)
+     can engage instead of the flex item just refusing to compress. */
+  flex: 1;
+  min-width: 0;
+  background: var(--sds-color-background-default-secondary);
+  border: 1px solid var(--sds-color-border-default-default);
+  border-radius: calc(24px * var(--radius-multiplier));
+  padding-left: 12px; /* only from the left, per spec -- no other padding on the wrapper */
+  box-shadow: var(--floating-shadow);
+}
+
+.clock-context-menu .tz-input .tz-trigger {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: var(--sds-color-text-default-default);
+  font-family: var(--sds-typography-body-font-family);
+  font-size: var(--sds-typography-body-size-medium);
+  font-weight: var(--sds-typography-body-font-weight-regular);
+  cursor: pointer;
+  text-align: left;
+}
+
+.tz-value {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tz-caret {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  /* Not one of the 13 named tokens -- reusing Icon/Default/Default since
+     this is a plain functional icon, not a tertiary/secondary one. */
+  color: var(--sds-color-icon-default-default);
+}
+
+.tz-caret i {
+  /* 16 tier of the icon scale (16/20/24/32/40/48), per the design file's
+     select caret -- not the 24 tier the other chrome uses. */
+  font-size: 16px;
+  transition: transform 160ms ease;
+}
+
+.tz-input.is-open .tz-caret i {
+  transform: rotate(180deg);
+}
+
+/* Custom options list -- replaces the native <select> popup entirely.
+   Position/sizing not covered by your spec, so this is a default: same
+   background/border/radius family as the input itself, offset a small
+   gap below it. */
+.tz-options {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  margin: 0;
+  padding: 4px;
+  list-style: none;
+  background: var(--sds-color-background-default-secondary);
+  border: 1px solid var(--sds-color-border-default-default);
+  border-radius: calc(24px * var(--radius-multiplier));
+  max-height: 200px;
+  overflow-y: auto;
+  box-shadow: var(--floating-shadow);
+  z-index: 60;
+}
+
+.tz-options li {
+  padding: 8px 8px;
+  border-radius: calc(8px * var(--radius-multiplier));
+  color: var(--sds-color-text-default-default);
+  font-family: var(--sds-typography-body-font-family);
+  font-size: var(--sds-typography-body-size-medium);
+  font-weight: var(--sds-typography-body-font-weight-regular);
+  cursor: pointer;
+}
+
+/* Flipped variant: wireTzDropdown adds this when there's no room below the
+   trigger, so the popover grows upward instead of being cropped by the
+   sidebar/list scrollers. */
+.tz-options.opens-up {
+  top: auto;
+  bottom: calc(100% + 4px);
+}
+
+/* Hover/selected treatment: also not covered by your spec -- defaulted to
+   the same tertiary surface used for rows elsewhere (Grid, Snap to grid, ...). */
+.tz-options li:hover,
+.tz-options li[aria-selected="true"] {
+  background: var(--sds-color-background-default-tertiary);
+}
+
+/* Direct children of the menu (the two stack-order arrows + delete) get the
+   uniform 40px / radius-24 / Background-Default-Secondary / Border-Default-
+   Default chrome. The ">" combinator deliberately excludes the shape-switch's
+   own inner buttons below, which stay sized/styled like #theme-switch's. */
+.clock-context-menu > .icon-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: calc(24px * var(--radius-multiplier));
+  background: var(--sds-color-background-default-secondary);
+  border: 1px solid var(--sds-color-border-default-default);
+  box-shadow: var(--floating-shadow);
+}
+
+.clock-context-menu > .icon-btn.danger {
+  border: none; /* the one exception to the border rule */
+  background: var(--sds-color-background-danger-default);
+  color: var(--sds-color-icon-danger-on-danger);
+}
+
+/* Shape switch (circle/squircle): same construction as #theme-switch --
+   sliding .switch-indicator + fill/thin icon-stack crossfade, both already
+   defined generically above and reused here as-is. Only the outer container
+   differs (chrome background/border/height/radius per this spec, instead of
+   #theme-switch's own background). */
+.clock-switch {
+  position: relative;
+  display: flex;
+  align-items: center;
+  /* Design frame is 72x40 including its 1px inside stroke, so the visible
+     padding is the spec'd 4px only if the border eats 1px of it here. */
+  height: 40px;
+  padding: 3px;
+  background: var(--sds-color-background-default-secondary);
+  border: 1px solid var(--sds-color-border-default-default);
+  border-radius: calc(24px * var(--radius-multiplier));
+  box-shadow: var(--floating-shadow);
+}
+
+.clock-switch .switch-indicator {
+  top: 3px;
+  left: 3px;
+  width: 32px;
+  height: 32px;
+  border-radius: calc(16px * var(--radius-multiplier));
+  /* Overrides the shared .switch-indicator's Secondary background: this
+     container is ALSO Secondary per the "background/default/secondary for
+     every element" instruction, so the two would be identical and the
+     sliding indicator would be invisible against its own container. Using
+     Tertiary here instead is a default to keep the highlight visible --
+     flagging in case a different token was intended. */
+  background: var(--sds-color-background-default-tertiary);
+}
+
+.clock-switch[data-active="squircle"] .switch-indicator {
+  transform: translateX(32px);
+}
+
