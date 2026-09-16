@@ -2,7 +2,7 @@
 
 A grid-snapped, multi-timezone clock canvas. Drag on the canvas to draw clocks, move and resize them on a snapping grid, switch timezones per clock, and manage the list from a settings sidebar. No build step, no dependencies to install, no backend.
 
-🌐 **Live:** https://amirgpanah.github.io/NothingAnalogClock/
+🌐 **Live:** https://amirgpanah.github.io/NothingOSAnalogClock/
 
 ## What it does
 
@@ -39,4 +39,4 @@ Vanilla HTML/CSS/JS. No bundler, no framework.
 
 ## Acknowledgments
 
-Built with [Claude](https://claude.ai) (Anthropic), the [DeepSeek Harness](https://github.com/deepseek-ai) agent workspace, and a bunch of other free models for spot help along the way.
+Built with [Claude](https://claude.ai) (Anthropic) and the [DeepSeek Harness](https://github.com/deepseek-ai) agent workspace.
