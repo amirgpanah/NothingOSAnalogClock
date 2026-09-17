@@ -184,7 +184,7 @@
 
 /* Hover/selected treatment: also not covered by your spec -- defaulted to
    the same tertiary surface used for rows elsewhere (Grid, Snap to grid, ...). */
-.tz-options li:hover,
+.tz-options li:where(html:not([data-touch]) *):hover,
 .tz-options li[aria-selected="true"] {
   background: var(--sds-color-background-default-tertiary);
 }

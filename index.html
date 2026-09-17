@@ -1867,39 +1867,69 @@
           .getElementById("collapseBtn")
           .addEventListener("click", toggleSidebarState);
 
-        // ---- Touch: taps leave a pressed-looking state because the tap
-        // keeps focus on the button. Blur after the click completes so
-        // nothing looks stuck. Keyboard users unaffected (focus follows
-        // Tab, not taps, on touch-primary devices).
-        if (window.matchMedia("(hover: none)").matches) {
-          sidebarEl.addEventListener("click", (e) => {
-            const btn = e.target.closest("button");
-            if (btn) setTimeout(() => btn.blur(), 0);
-          });
+        // Suppress emulated hover after touch, including on hybrid devices.
+        for (const type of ["pointerdown", "pointermove"]) {
+          document.addEventListener(type, e => {
+            document.documentElement.toggleAttribute("data-touch", e.pointerType !== "mouse");
+          }, { capture: true, passive: true });
         }
+        document.addEventListener("click", e => {
+          if (e.pointerType !== "touch" && e.pointerType !== "pen") return;
+          const button = e.target.closest("button");
+          if (button) setTimeout(() => button.blur(), 0);
+        }, true);
 
-        // ---- Drag the header up/down to expand/collapse (touch-first) ----
-        // Small drags (< threshold) still count as taps via the click above.
+        // Header follows the pointer; release snaps to the requested state.
         {
           const header = document.getElementById("sidebar-header");
-          let startY = null;
-          header.addEventListener("pointerdown", (e) => {
-            if (e.target.closest("button")) return; // buttons handle their own taps
-            startY = e.clientY;
+          let drag = null, suppressClick = false;
+          header.addEventListener("click", e => {
+            if (!suppressClick) return;
+            suppressClick = false;
+            e.preventDefault();
+            e.stopImmediatePropagation();
+          }, true);
+          header.addEventListener("pointerdown", e => {
+            if (!e.isPrimary || e.button !== 0 || e.target.closest("button") || drag) return;
+            suppressClick = false;
+            const state = sidebarEl.dataset.state;
+            const top = sidebarEl.getBoundingClientRect().top;
+            sidebarEl.style.transition = "none";
+            sidebarEl.dataset.state = "expanded";
+            const expanded = sidebarEl.getBoundingClientRect().top;
+            sidebarEl.dataset.state = "collapsed";
+            const collapsed = sidebarEl.getBoundingClientRect().top;
+            sidebarEl.dataset.state = state;
+            sidebarEl.getBoundingClientRect();
+            sidebarEl.style.removeProperty("transition");
+            drag = { id: e.pointerId, y: e.clientY, state, top, expanded, collapsed, moved: false, dy: 0 };
+            header.setPointerCapture(e.pointerId);
           });
-          header.addEventListener("pointermove", (e) => {
-            if (startY === null) return;
-            const dy = e.clientY - startY;
-            if (Math.abs(dy) < 24) return; // drag threshold
-            const goingUp = dy < 0;
-            const isCollapsed =
-              sidebarEl.dataset.state === "collapsed";
-            if (goingUp && isCollapsed) toggleSidebarState();
-            if (!goingUp && !isCollapsed) toggleSidebarState();
-            startY = null; // one toggle per gesture
+          header.addEventListener("pointermove", e => {
+            if (!drag || e.pointerId !== drag.id) return;
+            drag.dy = e.clientY - drag.y;
+            if (!drag.moved && Math.abs(drag.dy) < 6) return;
+            drag.moved = true;
+            sidebarEl.style.transition = "none";
+            sidebarEl.dataset.state = "expanded";
+            const top = Math.max(drag.expanded, Math.min(drag.collapsed, drag.top + drag.dy));
+            sidebarEl.style.transform = `translateY(${top - drag.expanded}px)`;
           });
-          window.addEventListener("pointerup", () => (startY = null));
-          window.addEventListener("pointercancel", () => (startY = null));
+          function endDrag(e) {
+            if (!drag || e.pointerId !== drag.id) return;
+            const current = drag;
+            drag = null;
+            suppressClick = current.moved;
+            sidebarEl.getBoundingClientRect();
+            sidebarEl.style.removeProperty("transition");
+            sidebarEl.style.removeProperty("transform");
+            sidebarEl.dataset.state = e.type === "pointerup" && Math.abs(current.dy) >= 24
+              ? (current.dy < 0 ? "expanded" : "collapsed") : current.state;
+            if (header.hasPointerCapture(e.pointerId)) header.releasePointerCapture(e.pointerId);
+          }
+          header.addEventListener("pointerup", endDrag);
+          header.addEventListener("pointercancel", endDrag);
+          header.addEventListener("lostpointercapture", endDrag);
         }
       })();
     </script>

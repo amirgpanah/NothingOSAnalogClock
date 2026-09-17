@@ -117,11 +117,11 @@
 /* ponytail: revert-point -- .icon-btn interactive states (all icon buttons:
    theme, stack arrows, shape, eye, trash). Tertiary idle -> default hover,
    color-only, no background shifts. */
-.icon-btn:hover {
+.icon-btn:where(html:not([data-touch]) *):hover {
   color: var(--sds-color-icon-default-default);
 }
 
-.icon-btn.danger:hover {
+.icon-btn.danger:where(html:not([data-touch]) *):hover {
   color: var(--sds-color-icon-danger-on-danger);
 }
 

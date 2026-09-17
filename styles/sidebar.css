@@ -189,6 +189,8 @@
 }
 
 #sidebar-header {
+  touch-action: none; /* Header owns sheet dragging; body keeps native scrolling. */
+  user-select: none;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -239,7 +241,7 @@
 /* ponytail: revert-point -- interactive states batch (hover/focus/active).
    Covers: .collapse-btn, .toggle, .stepper-btn, .segmented-btn,
    .tz-trigger/.tz-caret, .chip-btn/.full-btn, .clock-row-drag focus. */
-.collapse-btn:hover {
+.collapse-btn:where(html:not([data-touch]) *):hover {
   background: var(--sds-color-background-default-tertiary);
 }
 
@@ -261,7 +263,7 @@
   outline-offset: 2px;
 }
 
-.stepper-btn:hover {
+.stepper-btn:where(html:not([data-touch]) *):hover {
   color: var(--sds-color-icon-default-default);
 }
 
@@ -269,17 +271,17 @@
   color: var(--sds-color-icon-default-tertiary);
 }
 
-.segmented-btn:hover {
+.segmented-btn:where(html:not([data-touch]) *):hover {
   color: var(--sds-color-text-default-default);
 }
 
-.tz-trigger:hover .tz-value,
-.tz-caret:hover {
+.tz-trigger:where(html:not([data-touch]) *):hover .tz-value,
+.tz-caret:where(html:not([data-touch]) *):hover {
   color: var(--sds-color-text-default-default);
 }
 
-.chip-btn:hover,
-.full-btn:hover {
+.chip-btn:where(html:not([data-touch]) *):hover,
+.full-btn:where(html:not([data-touch]) *):hover {
   background: var(--sds-color-background-default-tertiary);
 }
 
@@ -611,7 +613,7 @@
   transition: color 120ms ease;
 }
 
-.clock-row-drag:hover {
+.clock-row-drag:where(html:not([data-touch]) *):hover {
   color: var(--sds-color-icon-default-default);
 }
 
@@ -686,7 +688,7 @@
     margin-left 180ms ease;
 }
 
-.clock-row:hover .clock-row-actions,
+.clock-row:where(html:not([data-touch]) *):hover .clock-row-actions,
 .clock-row:focus-within .clock-row-actions {
   width: 84px; /* two 40px buttons + 4px gap */
   opacity: 1;
@@ -698,7 +700,7 @@
    tertiary fill reads as the hover state where a color shift alone
    doesn't. Scoped to .clock-row-actions so canvas/context-menu icon
    buttons stay color-only. */
-.clock-row-actions .icon-btn:hover {
+.clock-row-actions .icon-btn:where(html:not([data-touch]) *):hover {
   background: var(--sds-color-background-default-tertiary);
 }
 
