@@ -10,4 +10,7 @@
 - Mobile snackbars now appear at the top of the screen, above the sidebar sheet.
 - Touch taps no longer leave buttons in a hover/focus state; keyboard focus is unaffected.
 
+### Fixed
+- The first tap on the collapse button after a drag now toggles immediately instead of needing three taps.
+
 ## [1.0.0] - Initial version
