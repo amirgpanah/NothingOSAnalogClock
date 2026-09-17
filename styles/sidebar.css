@@ -74,8 +74,6 @@
   --columns: 4;
   --sidebar-width: calc((100vw - (var(--page-margin) * 2)) / var(--columns));
   --sidebar-radius: calc(128px * var(--radius-multiplier));
-  /* Height of handle + header when collapsed */
-  --collapsed-height: 108px;
 
 }
 
@@ -97,11 +95,11 @@
   z-index: 40;
   font-family: var(--sds-typography-body-font-family);
   transition:
-    transform 250ms ease,
-    top 250ms ease,
-    bottom 250ms ease,
-    border-radius 250ms ease,
-    max-height 250ms ease;
+    transform 350ms ease,
+    top 350ms ease,
+    bottom 350ms ease,
+    border-radius 350ms ease,
+    max-height 350ms ease;
 }
 
 /* Tablet */
@@ -111,11 +109,10 @@
   }
 }
 
-/* Desktop & Tablet collapsed -- matches DarkClockCollapsed frame: 108px header at bottom, animated */
+/* Compensate for bottom: --page-margin so only the header remains visible.
+   Revert: use calc(100% - var(--collapsed-height) - var(--page-margin)). */
 #sidebar[data-state="collapsed"] {
-  transform: translateY(
-    calc(100% - var(--collapsed-height) - var(--page-margin))
-  );
+  transform: translateY(calc(100% - var(--collapsed-height) + var(--page-margin)));
   border-radius: var(--sidebar-radius) var(--sidebar-radius) 0 0;
 }
 
@@ -135,7 +132,7 @@
   padding: 0 32px 32px;
   transition:
     opacity 180ms ease,
-    max-height 250ms ease;
+    max-height 350ms ease;
 }
 
 #sidebar[data-state="collapsed"] #sidebar-body {
@@ -159,22 +156,35 @@
     width: auto;
   }
 
+  /* ponytail: revert-point -- mobile sheet driven by transform (was
+     top:auto<->margin + max-height:108px<->none, neither animatable, so
+     the sheet teleported while only border-radius eased). Both states now
+     pin top/bottom/max-height identically; collapsed pushes the sheet down
+     with translateY until one header-height remains, like desktop. */
+  /* ponytail: revert-point -- flush bottom docking (was bottom:
+     var(--mobile-margin), leaving a 16px gap under the sheet). */
   /* Collapsed */
   #sidebar[data-state="collapsed"] {
-    top: auto;
+    top: var(--mobile-margin);
     bottom: 0;
-    transform: none;
-    max-height: var(--collapsed-height);
+    transform: translateY(calc(100% - var(--collapsed-height)));
+    max-height: none;
     border-radius: var(--sidebar-radius) var(--sidebar-radius) 0 0;
+    transition:
+      transform 350ms ease,
+      border-radius 350ms ease;
   }
 
   /* Expanded */
   #sidebar[data-state="expanded"] {
     top: var(--mobile-margin);
     bottom: var(--mobile-margin);
-    transform: none;
+    transform: translateY(0);
     max-height: none;
     border-radius: var(--sidebar-radius);
+    transition:
+      transform 350ms ease,
+      border-radius 350ms ease;
   }
 }
 

@@ -8,20 +8,6 @@
        https://fonts.google.com/specimen/Inter (served via rsms.me) -->
     <link rel="preconnect" href="https://rsms.me/">
     <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
-    <!--
-  Icons in this file are plain placeholder inline SVGs (see the "PLACEHOLDER
-  ICON" comments throughout), standing in for Phosphor icons. To switch to
-  the real Phosphor set later:
-    1. Add the web font/script once, e.g. in <head>:
-         <script src="https://unpkg.com/@phosphor-icons/web"></script>
-       (or `npm install @phosphor-icons/web` and import it in a bundler setup)
-    2. Replace each placeholder <svg>...</svg> block with the matching tag,
-       e.g. <i class="ph ph-sun"></i>, <i class="ph ph-moon"></i>,
-       <i class="ph ph-eye"></i>, <i class="ph ph-trash"></i>,
-       <i class="ph ph-caret-down"></i>, <i class="ph ph-caret-up"></i>.
-    3. Icon color/size is already driven by CSS (color + font-size /
-       width+height), so no other markup changes should be needed.
--->
     <link rel="stylesheet" href="theme/theme.css" />
     <link rel="stylesheet" href="styles/app.css" />
     <link rel="stylesheet" href="styles/components.css" />
@@ -1820,23 +1806,26 @@
         renderClocksList();
 
         // ---- Default clock: one centered clock so the canvas never starts empty ----
-        // Grid-first: 8x4 whole cells (2:1 pill), anchored to the grid phase
-        // exactly like a marquee draw -- position is snapped to the phase so
-        // all four corners sit on grid lines, not derived from arithmetic
-        // centering that can drift half a cell off.
+        // Default 16x7 cells; mobile fits the viewport, with grid-snapped edges.
         {
           const vw = window.visualViewport ? window.visualViewport.width : window.innerWidth;
           const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-          const cellsW = 16;
-          const cellsH = 7;
+          const mobile = window.matchMedia("(max-width: 640px)").matches;
+          const margin = parseFloat(getComputedStyle(document.documentElement)
+            .getPropertyValue(mobile ? "--mobile-margin" : "--page-margin"));
+          const leftGrid = phaseX + Math.ceil((margin - phaseX) / GRID_SIZE) * GRID_SIZE;
+          const rightGrid = phaseX + Math.floor((vw - margin - phaseX) / GRID_SIZE) * GRID_SIZE;
+          const cellsW = mobile
+            ? Math.max(MIN_SIZE_FACTOR, Math.min(16, Math.round((rightGrid - leftGrid) / GRID_SIZE)))
+            : 16;
+          const cellsH = mobile ? Math.max(MIN_SIZE_FACTOR, Math.round(cellsW * 7 / 16)) : 7;
           const w = cellsW * GRID_SIZE;
           const h = cellsH * GRID_SIZE;
-          // Nearest grid line to the free-strip center (same strip the
-          // snackbar centers over -- see #snackbar in app.css).
-          const strip =
-            vw - 2 * 32 - document.getElementById("sidebar").offsetWidth;
+          const centerX = mobile ? vw / 2
+            : (vw - document.getElementById("sidebar").offsetWidth) / 2;
+          const x = snap(centerX - w / 2, phaseX);
           const clock = createClock(
-            snap(32 + (strip - w) / 2, phaseX),
+            mobile ? Math.max(leftGrid, Math.min(rightGrid - w, x)) : x,
             snap(vh / 2 - h / 2, phaseY),
             w,
             h,
@@ -1849,6 +1838,22 @@
 
         // ---- Collapse/expand (drag handle OR the header caret) ----
         const sidebarEl = document.getElementById("sidebar");
+        // Measure the header for collapsed positioning on desktop and mobile.
+        function measureCollapsedHeight() {
+          const h = document.getElementById("sidebar-header").offsetHeight;
+          if (h) sidebarEl.style.setProperty("--collapsed-height", h + "px");
+        }
+        if (document.fonts && document.fonts.ready) {
+          document.fonts.ready.then(() => requestAnimationFrame(measureCollapsedHeight));
+        }
+        requestAnimationFrame(measureCollapsedHeight);
+        window.addEventListener("resize", measureCollapsedHeight);
+        // Set the measured height before applying the initial collapsed state.
+        measureCollapsedHeight();
+        // Mobile starts collapsed (bottom sheet); desktop starts expanded.
+        if (window.matchMedia("(max-width: 640px)").matches) {
+          sidebarEl.dataset.state = "collapsed";
+        }
         function toggleSidebarState() {
           sidebarEl.dataset.state =
             sidebarEl.dataset.state === "collapsed"
