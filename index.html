@@ -1866,6 +1866,41 @@
         document
           .getElementById("collapseBtn")
           .addEventListener("click", toggleSidebarState);
+
+        // ---- Touch: taps leave a pressed-looking state because the tap
+        // keeps focus on the button. Blur after the click completes so
+        // nothing looks stuck. Keyboard users unaffected (focus follows
+        // Tab, not taps, on touch-primary devices).
+        if (window.matchMedia("(hover: none)").matches) {
+          sidebarEl.addEventListener("click", (e) => {
+            const btn = e.target.closest("button");
+            if (btn) setTimeout(() => btn.blur(), 0);
+          });
+        }
+
+        // ---- Drag the header up/down to expand/collapse (touch-first) ----
+        // Small drags (< threshold) still count as taps via the click above.
+        {
+          const header = document.getElementById("sidebar-header");
+          let startY = null;
+          header.addEventListener("pointerdown", (e) => {
+            if (e.target.closest("button")) return; // buttons handle their own taps
+            startY = e.clientY;
+          });
+          header.addEventListener("pointermove", (e) => {
+            if (startY === null) return;
+            const dy = e.clientY - startY;
+            if (Math.abs(dy) < 24) return; // drag threshold
+            const goingUp = dy < 0;
+            const isCollapsed =
+              sidebarEl.dataset.state === "collapsed";
+            if (goingUp && isCollapsed) toggleSidebarState();
+            if (!goingUp && !isCollapsed) toggleSidebarState();
+            startY = null; // one toggle per gesture
+          });
+          window.addEventListener("pointerup", () => (startY = null));
+          window.addEventListener("pointercancel", () => (startY = null));
+        }
       })();
     </script>
   </body>
