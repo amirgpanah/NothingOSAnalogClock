@@ -189,7 +189,10 @@
 }
 
 #sidebar-header {
-  touch-action: none; /* Header owns sheet dragging; body keeps native scrolling. */
+  /* Required: without it the browser claims the gesture for scrolling and
+     pointercancel kills the JS drag before the first move (verified via
+     Playwright trace). The header never scrolls natively, so nothing is lost. */
+  touch-action: none;
   user-select: none;
   display: flex;
   flex-direction: column;

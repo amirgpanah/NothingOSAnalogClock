@@ -259,6 +259,11 @@
            leaving no side strip to dodge -- plain centering wins again. */
         #snackbar {
           left: 50%;
+          top: calc(env(safe-area-inset-top, 0px) + var(--mobile-margin));
+          bottom: auto;
+          width: max-content;
+          max-width: calc(100vw - 2 * var(--mobile-margin));
+          z-index: 70; /* Above the sheet and its dropdowns. */
         }
       }
 

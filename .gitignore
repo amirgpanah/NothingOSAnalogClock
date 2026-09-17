@@ -13,3 +13,7 @@ node_modules/
 dist/
 .DSH/
 *.log
+
+# Dev-only: browser touch regression tooling (see check-touch.cjs), not needed to run the app
+package.json
+package-lock.json

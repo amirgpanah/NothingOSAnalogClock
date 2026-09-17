@@ -1879,18 +1879,30 @@
           if (button) setTimeout(() => button.blur(), 0);
         }, true);
 
-        // Header follows the pointer; release snaps to the requested state.
+        // Drag the sheet from its surface; scrollable content keeps native scrolling.
         {
-          const header = document.getElementById("sidebar-header");
+          const header = sidebarEl;
+          const body = document.getElementById("sidebar-body");
+          function updateSheetScroll() {
+            for (const el of [body, ...body.querySelectorAll("#clocksList")]) {
+              el.style.touchAction = el.scrollTop > 0 ? "pan-y" : "pan-down";
+            }
+          }
+          sidebarEl.addEventListener("scroll", updateSheetScroll, true);
+          updateSheetScroll();
           let drag = null, suppressClick = false;
           header.addEventListener("click", e => {
-            if (!suppressClick) return;
+            if (!suppressClick || e.detail === 0) return;
             suppressClick = false;
             e.preventDefault();
             e.stopImmediatePropagation();
           }, true);
           header.addEventListener("pointerdown", e => {
-            if (!e.isPrimary || e.button !== 0 || e.target.closest("button") || drag) return;
+            if (!e.isPrimary || e.button !== 0 || e.target.closest("button, a, input, select, textarea, [role='listbox']") || drag) return;
+            for (let el = e.target; el && el !== sidebarEl; el = el.parentElement) {
+              if (el.scrollTop > 0) return;
+            }
+            e.preventDefault();
             suppressClick = false;
             const state = sidebarEl.dataset.state;
             const top = sidebarEl.getBoundingClientRect().top;
