@@ -5,6 +5,8 @@
 ### Added
 - Whole-sheet drag: expand/collapse the sidebar by swiping anywhere on its surface, not just the header. Short and cancelled gestures snap back; scrollable lists keep native scrolling.
 - Playwright Chromium touch regression checks (`check-touch.cjs`, dev-only).
+- Hidden clocks now keep the eye and trash buttons parked in their sidebar row, so a hidden clock stays reachable and deletable; the timezone selector expands into the remaining width.
+- Playwright visibility/focus regression check (`check-visibility-focus.mjs`, dev-only).
 
 ### Changed
 - Mobile snackbars now appear at the top of the screen, above the sidebar sheet.
@@ -12,5 +14,6 @@
 
 ### Fixed
 - The first tap on the collapse button after a drag now toggles immediately instead of needing three taps.
+- Clicking a row's visibility button no longer leaves the eye/trash actions stuck open after the pointer leaves the row; only keyboard focus holds them open now.
 
 ## [1.0.0] - Initial version

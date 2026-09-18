@@ -1717,11 +1717,17 @@
             );
             const eyeBtn = row.querySelector(".icon-btn:not(.danger)");
             let visible = c.el.style.display !== "none";
-            eyeBtn.style.opacity = visible ? "1" : "0.4";
-            eyeBtn.addEventListener("click", () => {
-              visible = !visible;
+            function applyVisibility() {
               c.el.style.display = visible ? "" : "none";
               eyeBtn.style.opacity = visible ? "1" : "0.4";
+              // Hidden clocks keep the eye parked in the row (it's the only
+              // way back); visible ones behave like any other row.
+              row.classList.toggle("is-hidden", !visible);
+            }
+            applyVisibility();
+            eyeBtn.addEventListener("click", () => {
+              visible = !visible;
+              applyVisibility();
             });
             row
               .querySelector(".icon-btn.danger")

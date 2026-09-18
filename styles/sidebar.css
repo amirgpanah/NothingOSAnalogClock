@@ -691,8 +691,12 @@
     margin-left 180ms ease;
 }
 
+/* A hidden clock parks both actions in the row permanently (the eye is the
+   only way back and the trash stays reachable), so the tz field just takes
+   whatever's left instead of the full strip. */
 .clock-row:where(html:not([data-touch]) *):hover .clock-row-actions,
-.clock-row:focus-within .clock-row-actions {
+.clock-row:has(:focus-visible) .clock-row-actions,
+.clock-row.is-hidden:where(html:not([data-touch]) *) .clock-row-actions {
   width: 84px; /* two 40px buttons + 4px gap */
   opacity: 1;
   margin-left: 4px;
