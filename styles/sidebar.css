@@ -129,18 +129,29 @@
   flex: 1;
   overflow: auto;
   opacity: 1;
+  visibility: visible;
   padding: 0 32px 32px;
   transition:
     opacity 180ms ease,
-    max-height 350ms ease;
+    max-height 350ms ease,
+    visibility 0s;
 }
 
 #sidebar[data-state="collapsed"] #sidebar-body {
   opacity: 0;
+  /* visibility (and with it hit-testing/tab order) flips only AFTER the
+     350ms sheet glide: killing it instantly leaves visibly-fading buttons
+     dead under the finger, so the quick tap after a collapse swipe falls
+     through to whatever is behind and looks swallowed. */
+  visibility: hidden;
   max-height: 0;
   overflow: hidden;
   pointer-events: none;
   flex: 0 0 auto; /* kill the flex-grow so max-height: 0 actually wins */
+  transition:
+    opacity 180ms ease,
+    max-height 350ms ease,
+    visibility 0s linear 350ms;
 }
 
 /* ---------- Mobile ---------- */

@@ -200,6 +200,11 @@
       (function () {
         "use strict";
 
+        // Build stamp for on-device verification (check-tap-log.html shows
+        // it). Bump on every interaction-code change so stale caches /
+        // partial file copies are obvious instead of looking like bugs.
+        window.__BUILD = "2026-09-19 / swipe-tap fix batch 3";
+
         // ---------- Theme ----------
         const root = document.documentElement;
         const themeLightBtn = document.getElementById("themeLightBtn");
@@ -1197,6 +1202,19 @@
           renderClocksList();
         }
 
+        // Touch has no mouseleave: a tap-revealed clock menu (show-handles)
+        // would otherwise stay open indefinitely, its full-width fixed bar
+        // (z-index above the sidebar) silently swallowing the next tap on
+        // whatever it covers. Tapping anywhere outside the clock dismisses
+        // it; the tap's own click still runs (nothing is stopped here).
+        document.addEventListener("click", (e) => {
+          for (const c of clocks) {
+            if (c.el.classList.contains("show-handles") && !c.el.contains(e.target)) {
+              c.el.classList.remove("show-handles");
+            }
+          }
+        });
+
         // ---------- Clock stacking order ----------
         // Deliberately DOM-order based, not z-index: giving each .clock an
         // explicit z-index would make it establish its own stacking context,
@@ -1896,10 +1914,16 @@
           }
           sidebarEl.addEventListener("scroll", updateSheetScroll, true);
           updateSheetScroll();
-          let drag = null, suppressClick = false;
+          let drag = null, suppressClick = false, settleTimer = 0;
+          // Disarm on the next gesture anywhere: the drag's own trailing
+          // click is swallowed below, but if the browser never fires one
+          // (touch drags often don't), the flag must not survive to eat a
+          // later, unrelated tap.
+          document.addEventListener("pointerdown", () => { suppressClick = false; }, true);
           header.addEventListener("click", e => {
-            if (!suppressClick || e.detail === 0) return;
-            suppressClick = false;
+            if (!suppressClick) return;
+            suppressClick = false; // always disarm, even for clicks we let through
+            if (e.detail === 0) return; // keyboard/synthetic: never block, just disarm
             e.preventDefault();
             e.stopImmediatePropagation();
           }, true);
@@ -1914,6 +1938,9 @@
             e.preventDefault();
             const state = sidebarEl.dataset.state;
             const top = sidebarEl.getBoundingClientRect().top;
+            clearTimeout(settleTimer);
+            sidebarEl.style.removeProperty("transition-duration");
+            body.style.removeProperty("transition-duration");
             sidebarEl.style.transition = "none";
             sidebarEl.dataset.state = "expanded";
             const expanded = sidebarEl.getBoundingClientRect().top;
@@ -1922,12 +1949,15 @@
             sidebarEl.dataset.state = state;
             sidebarEl.getBoundingClientRect();
             sidebarEl.style.removeProperty("transition");
-            drag = { id: e.pointerId, y: e.clientY, state, top, expanded, collapsed, moved: false, dy: 0 };
+            drag = { id: e.pointerId, y: e.clientY, state, top, expanded, collapsed, moved: false, dy: 0, samples: [{ y: e.clientY, t: performance.now() }] };
             header.setPointerCapture(e.pointerId);
           });
           header.addEventListener("pointermove", e => {
             if (!drag || e.pointerId !== drag.id) return;
             drag.dy = e.clientY - drag.y;
+            const now = performance.now();
+            drag.samples.push({ y: e.clientY, t: now });
+            if (drag.samples.length > 4) drag.samples.shift();
             if (!drag.moved && Math.abs(drag.dy) < 6) return;
             drag.moved = true;
             sidebarEl.style.transition = "none";
@@ -1940,11 +1970,47 @@
             const current = drag;
             drag = null;
             suppressClick = current.moved;
-            sidebarEl.getBoundingClientRect();
-            sidebarEl.style.removeProperty("transition");
-            sidebarEl.style.removeProperty("transform");
-            sidebarEl.dataset.state = e.type === "pointerup" && Math.abs(current.dy) >= 24
+            const next = e.type === "pointerup" && Math.abs(current.dy) >= 24
               ? (current.dy < 0 ? "expanded" : "collapsed") : current.state;
+            const rest = next === "expanded" ? current.expanded : current.collapsed;
+            const remaining = Math.abs((current.top + current.dy) - rest);
+            sidebarEl.getBoundingClientRect();
+            // NOTE: remove the shorthand BEFORE setting duration below --
+            // in Blink, removeProperty('transition') also wipes a
+            // separately-set inline transition-duration.
+            sidebarEl.style.removeProperty("transition");
+            if (remaining < 8) {
+              // Released at rest: snap instead of restarting the 350ms
+              // glide. A tap that grazed the sheet (finger roll) would
+              // otherwise re-animate over ~0px, keeping every button a
+              // moving target -- and the quick tap after it -- missing.
+              sidebarEl.style.transition = "none";
+              sidebarEl.style.transform = `translateY(${rest - current.expanded}px)`;
+              sidebarEl.getBoundingClientRect();
+              sidebarEl.style.removeProperty("transition");
+            } else {
+              // Settle with the finger's own energy: a flung sheet covers
+              // a long glide quickly instead of racing it at fixed 350ms,
+              // so buttons are back at rest (tappable) sooner. Slow drags
+              // keep a gentle floor speed; everything caps at the 350ms
+              // motion spec and floors so tiny hops don't flash.
+              const s = current.samples;
+              let v = 2.5;
+              if (s.length > 1) {
+                const dt = Math.max(1, s[s.length - 1].t - s[0].t);
+                v = Math.min(8, Math.max(2.5, Math.abs(s[s.length - 1].y - s[0].y) / dt));
+              }
+              const dur = Math.round(Math.min(350, Math.max(100, remaining / v)));
+              sidebarEl.style.transitionDuration = `${dur}ms`;
+              body.style.transitionDuration = `${dur}ms`;
+              clearTimeout(settleTimer);
+              settleTimer = setTimeout(() => {
+                sidebarEl.style.removeProperty("transition-duration");
+                body.style.removeProperty("transition-duration");
+              }, dur + 50);
+            }
+            sidebarEl.style.removeProperty("transform");
+            sidebarEl.dataset.state = next;
             if (header.hasPointerCapture(e.pointerId)) header.releasePointerCapture(e.pointerId);
           }
           header.addEventListener("pointerup", endDrag);

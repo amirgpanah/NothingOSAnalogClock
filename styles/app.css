@@ -180,7 +180,7 @@
         border-radius: 50%;
       }
 
-      .clock:hover .handle,
+      .clock:where(html:not([data-touch]) *):hover .handle,
       .clock.show-handles .handle {
         opacity: 0.9;
         pointer-events: auto;
