@@ -197,6 +197,26 @@
     <div id="snackbar" role="status" aria-live="polite"></div>
 
     <script>
+      // Mobile must paint the bottom sheet collapsed from the first frame.
+      // The markup says expanded, and the main script below forces layout
+      // (offsetWidth/viewport reads) before its own state flip, which caches
+      // the expanded state and animates the collapse on load. Flip + measure
+      // happen here, ahead of any layout, with the transition suppressed for
+      // the init flip only.
+      if (matchMedia("(max-width: 640px)").matches) {
+        const s = document.getElementById("sidebar");
+        s.style.transition = "none";
+        s.dataset.state = "collapsed";
+        s.style.setProperty(
+          "--collapsed-height",
+          document.getElementById("sidebar-header").offsetHeight + "px",
+        );
+        void s.offsetHeight; // flush the collapsed transform while transitions are off
+        s.style.removeProperty("transition");
+      }
+    </script>
+
+    <script>
       (function () {
         "use strict";
 
@@ -1856,10 +1876,6 @@
         window.addEventListener("resize", measureCollapsedHeight);
         // Set the measured height before applying the initial collapsed state.
         measureCollapsedHeight();
-        // Mobile starts collapsed (bottom sheet); desktop starts expanded.
-        if (window.matchMedia("(max-width: 640px)").matches) {
-          sidebarEl.dataset.state = "collapsed";
-        }
         function toggleSidebarState() {
           sidebarEl.dataset.state =
             sidebarEl.dataset.state === "collapsed"
@@ -1872,6 +1888,18 @@
         document
           .getElementById("collapseBtn")
           .addEventListener("click", toggleSidebarState);
+        // Wheel over the sheet's own chrome (anywhere that cannot scroll)
+        // collapses (wheel down) or expands (wheel up); over scrollable
+        // content it just scrolls natively. Repeated bursts are idempotent:
+        // every event in a down-flick already has its target state.
+        sidebarEl.addEventListener("wheel", (e) => {
+          if (e.buttons) return; // a pointer drag owns this gesture
+          for (let el = e.target; el && el !== sidebarEl; el = el.parentElement) {
+            if (el.scrollHeight > el.clientHeight + 1) return; // scrollable: scroll natively
+          }
+          const want = e.deltaY > 0 ? "collapsed" : e.deltaY < 0 ? "expanded" : "";
+          if (want && sidebarEl.dataset.state !== want) sidebarEl.dataset.state = want;
+        });
 
         // Suppress emulated hover after touch, including on hybrid devices.
         for (const type of ["pointerdown", "pointermove"]) {
