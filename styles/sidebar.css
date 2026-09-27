@@ -130,9 +130,12 @@
   overflow: auto;
   opacity: 1;
   padding: 0 32px 32px;
-  transition:
-    opacity 180ms ease,
-    max-height 350ms ease;
+  /* A length, not none: Chrome will not run a transition for none->0 (it
+     jumps), so the collapse below needs an interpolable start value. */
+  max-height: 100vh;
+  /* max-height deliberately NOT listed: expanding restores the box
+     instantly, exactly as before. */
+  transition: opacity 180ms ease;
 }
 
 #sidebar[data-state="collapsed"] #sidebar-body {
@@ -141,6 +144,14 @@
   overflow: hidden;
   pointer-events: none;
   flex: 0 0 auto; /* kill the flex-grow so max-height: 0 actually wins */
+  /* Hold the box (and its flex layout) for the full 350ms sheet glide and
+     drop it at rest, where the sheet has already carried the body below the
+     viewport. The content fades with opacity instead of being clipped away
+     at t=0, which made the sheet visibly slide down empty. */
+  transition:
+    opacity 180ms ease,
+    max-height 0s linear 350ms,
+    flex 0s linear 350ms;
 }
 
 /* ---------- Mobile ---------- */
