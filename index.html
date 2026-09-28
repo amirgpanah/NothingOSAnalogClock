@@ -1675,6 +1675,14 @@
         const clocksListEl = document.getElementById("clocksList");
         function renderClocksList() {
           clocksListEl.innerHTML = "";
+          if (!clocks.length) {
+            clocksListEl.innerHTML = `
+              <div class="clocks-empty">
+                <p>No clocks yet</p>
+                <button type="button" class="chip-btn" id="addClockBtn">Add a clock</button>
+              </div>`;
+            return;
+          }
           clocks.forEach((c, i) => {
             const row = document.createElement("div");
             row.className = "clock-row";
@@ -1832,8 +1840,9 @@
         renderClocksList();
 
         // ---- Default clock: one centered clock so the canvas never starts empty ----
-        // Default 16x7 cells; mobile fits the viewport, with grid-snapped edges.
-        {
+        // Also what the Clocks section's empty-state button adds. Default 16x7
+        // cells; mobile fits the viewport, with grid-snapped edges.
+        function addDefaultClock() {
           const vw = window.visualViewport ? window.visualViewport.width : window.innerWidth;
           const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
           const mobile = window.matchMedia("(max-width: 640px)").matches;
@@ -1856,11 +1865,16 @@
             w,
             h,
           );
-          clocks.unshift(clock);
+          clocks.push(clock);
           applyStackOrder();
           refreshAllStackButtons();
           renderClocksList();
         }
+        addDefaultClock();
+        // Delegated: the empty state is re-created by every renderClocksList.
+        clocksListEl.addEventListener("click", (e) => {
+          if (e.target.closest("#addClockBtn")) addDefaultClock();
+        });
 
         // ---- Collapse/expand (drag handle OR the header caret) ----
         const sidebarEl = document.getElementById("sidebar");

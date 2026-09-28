@@ -598,6 +598,39 @@
   transition: transform 180ms ease;
 }
 
+/* Empty state: shown instead of rows when every clock is deleted; the
+   button adds the default centered clock (delegated in index.html). */
+.clocks-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 16px;
+  text-align: center;
+  /* Dashed zone frames the clocks area itself; the button inside stays
+     borderless so the zone is the only outline. Radius pairs with
+     --radius-multiplier; the squircle corner-shape itself comes from the
+     single @supports opt-in list in components.css (the project's only
+     declaration point). Color = the sidebar's border. */
+  border: 1px dashed var(--sds-color-border-default-default);
+  border-radius: calc(48px * var(--radius-multiplier));
+}
+
+.clocks-empty .chip-btn {
+  border: none;
+}
+
+.clocks-empty p {
+  margin: 0;
+  color: var(--sds-color-text-default-tertiary);
+  font-family: var(--sds-typography-body-font-family);
+  font-size: var(--sds-typography-body-size-small);
+  line-height: var(--sds-typography-body-line-height-single);
+  font-weight: var(--sds-typography-body-font-weight-regular);
+}
+
 .clock-row {
   display: flex;
   align-items: center;

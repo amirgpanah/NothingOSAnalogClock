@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+- Empty state for the Clocks section: with no clocks left, the list shows a muted "No clocks yet" prompt plus an "Add a clock" button inside a dashed, sidebar-colored superellipse zone; the button creates the default centered clock.
+- Playwright empty-state regression check (`check-empty-state.mjs`, dev-only).
+
 ## [1.3.0] - 2026-09-27
 
 ### Added
